@@ -8,69 +8,43 @@
 
 describe('incident rhs > footer', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
+    let testTeam;
     let teamId;
-    let userId;
-    let playbookId;
+    let testUser;
+    let testIncident;
 
     before(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
-
-        cy.apiGetTeamByName('ad-1').then((team) => {
+        cy.apiInitSetup({createIncident: true}).then(({team, user, incident}) => {
+            testTeam = team;
             teamId = team.id;
-            cy.apiGetCurrentUser().then((user) => {
-                userId = user.id;
+            testUser = user;
+            testIncident = incident;
+        });
+    });
 
-                // # Create a playbook
-                cy.apiCreateTestPlaybook({
-                    teamId: team.id,
-                    title: playbookName,
-                    userId: user.id,
-                }).then((playbook) => {
-                    playbookId = playbook.id;
-                });
-            });
+    beforeEach(() => {
+        // # Size the viewport to show the RHS without covering posts.
+        cy.viewport('macbook-13');
+
+        // # Navigate directly to the application and the incident channel
+        cy.visit(`/${testTeam.name}/channels/` + testIncident.name);
+
+        // # Select the tasks tab
+        cy.findByTestId('tasks').click();
         });
 
-        beforeEach(() => {
-            // # Size the viewport to show the RHS without covering posts.
-            cy.viewport('macbook-13');
+    it('should have RHS footer buttons', () => {
 
-            // # Login as user-1
-            cy.apiLogin('user-1');
+        // * Verify that the button contains Update Status
+        cy.get('#incidentRHSFooter').within(() => {
+            cy.findByText('Overview').should('be.visible');
+            cy.findByText('Update Status').should('be.visible');
         });
 
-        describe('has navigation button', () => {
-            beforeEach(() => {
-                const now = Date.now();
-                const incidentName = 'Incident (' + now + ')';
-                const incidentChannelName = 'incident-' + now;
+        // // # Click on the End Incident button
+        // cy.get('#incidentRHSFooter button').click({multiple: true});
 
-                // # Start the incident
-                cy.apiStartIncident({
-                    teamId,
-                    playbookId,
-                    incidentName,
-                    commanderUserId: userId,
-                });
-
-                // # Navigate directly to the application and the incident channel
-                cy.visit('/ad-1/channels/' + incidentChannelName);
-
-                // # Select the tasks tab
-                cy.findByTestId('tasks').click();
-            });
-
-            it('should always say update status', () => {
-                // * Verify that the button contains Update Incident
-                cy.get('#incidentRHSFooter button').contains('Update Incident');
-
-                // # Click on the End Incident button
-                cy.get('#incidentRHSFooter button').click();
-
-                // * Verify that the interactive dialog is visible
-                cy.get('#interactiveDialogModalLabel').contains('Confirm End Incident');
-            });
-        });
+        // // * Verify that the interactive dialog is visible
+        // cy.get('#interactiveDialogModalLabel').contains('Confirm End Incident');
     });
 });

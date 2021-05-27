@@ -9,17 +9,18 @@
 import * as TIMEOUTS from '../../fixtures/timeouts';
 
 describe('playbook creation button', () => {
+    let testTeam;
+    let testUser;
+    let otherUser;
     before(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
+        // # Create test team and test user
+        cy.apiInitSetup().then(({team, user}) => {
+            testTeam = team;
+            testUser = user;
 
-        // # Create a playbook
-        cy.apiGetTeamByName('ad-1').then((team) => {
-            cy.apiGetCurrentUser().then((user) => {
-                cy.apiCreateTestPlaybook({
-                    teamId: team.id,
-                    userId: user.id,
-                });
+            cy.apiCreateUser({prefix: 'other'}).then(({user: newUser}) => {
+                otherUser = newUser;
+                cy.apiAddUserToTeam(team.id, newUser.id);
             });
         });
     });
@@ -29,10 +30,12 @@ describe('playbook creation button', () => {
         cy.viewport('macbook-13');
 
         // # Login as user-1
-        cy.apiLogin('user-1');
+        cy.apiLogin(testUser);
 
         // # Navigate to the application
-        cy.visit('/ad-1/');
+        // cy.visit('/');
+
+        cy.visit(`/${testTeam.name}`);
     });
 
     it('opens playbook creation page with New Playbook button', () => {
@@ -40,13 +43,13 @@ describe('playbook creation button', () => {
         const playbookName = 'Untitled Playbook';
 
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'New Playbook' button
-        cy.findByText('Create a Playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('New Playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
 
         // * Verify a new playbook creation page opened
         verifyPlaybookCreationPageOpened(url, playbookName);
@@ -57,7 +60,7 @@ describe('playbook creation button', () => {
         const playbookName = 'Untitled Playbook';
 
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
@@ -74,7 +77,7 @@ describe('playbook creation button', () => {
         const playbookName = 'Incident Collaboration Playbook';
 
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
@@ -89,15 +92,15 @@ describe('playbook creation button', () => {
         verifyPlaybookCreationPageOpened(url, playbookName);
     });
 
-    it('shows remove beside members when > 1 member', () => {
+    it('shows "Remove" beside members when > 1 member', () => {
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'New Playbook' button
-        cy.findByText('Create a Playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('New Playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
 
         // # Click 'Permissions' tab
         cy.findByText('Permissions').should('be.visible').click().wait(TIMEOUTS.TINY);

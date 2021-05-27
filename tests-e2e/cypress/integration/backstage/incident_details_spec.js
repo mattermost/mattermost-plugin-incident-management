@@ -7,16 +7,25 @@
 // ***************************************************************
 
 describe('backstage incident details', () => {
-    beforeEach(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
+    let testTeam;
+    let testUser;
+    
+    before(() => {
+        // # Create test team and test user
+        cy.apiInitSetup().then(({team, user}) => {
+            testTeam = team;
+            testUser = user;
+
+            // # Login as test user
+            cy.apiLogin(testUser);
+        });
     });
 
     it('redirects to not found error if the incident is unknown', () => {
         // # Visit the URL of a non-existing incident
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management/incidents/an_unknown_id');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management/incidents/an_unknown_id`);
 
         // * Verify that the user has been redirected to the incidents not found error page
-        cy.url().should('include', '/ad-1/com.mattermost.plugin-incident-management/error?type=incidents');
+        cy.url().should('include', `/${testTeam.name}/com.mattermost.plugin-incident-management/error?type=incidents`);
     });
 });

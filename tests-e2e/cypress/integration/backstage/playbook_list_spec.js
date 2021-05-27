@@ -7,41 +7,33 @@
 // ***************************************************************
 
 describe('backstage playbook list', () => {
-    const playbookName = 'Playbook (' + Date.now() + ')';
+    let testTeam;
+    let testUser;
 
     before(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
-
-        // # Create a playbook
-        cy.apiGetTeamByName('ad-1').then((team) => {
-            cy.apiGetCurrentUser().then((user) => {
-                cy.apiCreateTestPlaybook({
-                    teamId: team.id,
-                    title: playbookName,
-                    userId: user.id,
-                });
-            });
+        cy.apiInitSetup().then(({team, user}) => {
+            testTeam = team;
+            testUser = user;
         });
     });
 
     beforeEach(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
+        // # Login as test user
+        cy.apiLogin(testUser);
 
         // # Navigate to the application
-        cy.visit('/ad-1/');
+        cy.visit(`${testTeam.name}/`);
     });
 
     it('has "Playbooks" and team name in heading', () => {
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to Playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
 
         // * Assert contents of heading.
         cy.findByTestId('titlePlaybook').should('exist').contains('Playbooks');
-        cy.findByTestId('titlePlaybook').contains('eligendi');
+        cy.findByTestId('titlePlaybook').contains(testTeam.display_name);
     });
 });

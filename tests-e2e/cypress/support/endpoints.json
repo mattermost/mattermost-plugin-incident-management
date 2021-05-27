@@ -1,3 +1,4 @@
 {
-	"incidents": "/plugins/com.mattermost.plugin-incident-management/api/v0/incidents"
+	"incidents": "/plugins/com.mattermost.plugin-incident-management/api/v0/incidents",
+	"playbooks": "/plugins/com.mattermost.plugin-incident-management/api/v0/playbooks"
 }

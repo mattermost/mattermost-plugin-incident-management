@@ -10,8 +10,13 @@ import './server_api_commands';
 import './ui_commands';
 import './plugin_ui_commands';
 import './api/preference';
+import './api/team';
+import './api/channel';
 import './api/user';
 import './test_commands';
+import './api/playbook';
+import './api/incident';
+import './api/setup';
 
 require('cypress-terminal-report/src/installLogsCollector')();
 

@@ -33,65 +33,65 @@ Cypress.Commands.add('legacyApiLogin', (username = 'user-1', password = null) =>
 // https://api.mattermost.com/#tag/teams
 // *****************************************************************************
 
-/**
- * Creates a team directly via API
- * This API assume that the user is logged in and has permission to access
- * @param {String} name - Unique handler for a team, will be present in the team URL
- * @param {String} displayName - Non-unique UI name for the team
- * @param {String} type - 'O' for open (default), 'I' for invite only
- * All parameters required
- */
-Cypress.Commands.add('apiCreateTeam', (name, displayName, type = 'O') => {
-    const uniqueName = `${name}-${getRandomInt(9999).toString()}`;
+// /**
+//  * Creates a team directly via API
+//  * This API assume that the user is logged in and has permission to access
+//  * @param {String} name - Unique handler for a team, will be present in the team URL
+//  * @param {String} displayName - Non-unique UI name for the team
+//  * @param {String} type - 'O' for open (default), 'I' for invite only
+//  * All parameters required
+//  */
+// Cypress.Commands.add('apiCreateTeam', (name, displayName, type = 'O') => {
+//     const uniqueName = `${name}-${getRandomInt(9999).toString()}`;
 
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        url: '/api/v4/teams',
-        method: 'POST',
-        body: {
-            name: uniqueName,
-            display_name: displayName,
-            type,
-        },
-    }).then((response) => {
-        expect(response.status).to.equal(201);
-        cy.wrap({team: response.body});
-    });
-});
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         url: '/api/v4/teams',
+//         method: 'POST',
+//         body: {
+//             name: uniqueName,
+//             display_name: displayName,
+//             type,
+//         },
+//     }).then((response) => {
+//         expect(response.status).to.equal(201);
+//         cy.wrap({team: response.body});
+//     });
+// });
 
-/**
- * Gets the team matching the given name;
- */
-Cypress.Commands.add('apiGetTeamByName', (name) => {
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        url: '/api/v4/teams/name/' + name,
-        method: 'GET',
-    }).then((response) => {
-        expect(response.status).to.equal(200);
-        return cy.wrap(response.body);
-    });
-});
+// /**
+//  * Gets the team matching the given name;
+//  */
+// Cypress.Commands.add('apiGetTeamByName', (name) => {
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         url: '/api/v4/teams/name/' + name,
+//         method: 'GET',
+//     }).then((response) => {
+//         expect(response.status).to.equal(200);
+//         return cy.wrap(response.body);
+//     });
+// });
 
-/**
- * Add user into a team directly via API
- * This API assume that the user is logged in and has permission to access
- * @param {String} teamId - The team ID
- * @param {String} userId - ID of user to be added into a team
- * All parameter required
- */
-Cypress.Commands.add('apiAddUserToTeam', (teamId, userId) => {
-    cy.request({
-        method: 'POST',
-        url: `/api/v4/teams/${teamId}/members`,
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        body: {team_id: teamId, user_id: userId},
-        qs: {team_id: teamId},
-    }).then((response) => {
-        expect(response.status).to.equal(201);
-        return cy.wrap(response);
-    });
-});
+// /**
+//  * Add user into a team directly via API
+//  * This API assume that the user is logged in and has permission to access
+//  * @param {String} teamId - The team ID
+//  * @param {String} userId - ID of user to be added into a team
+//  * All parameter required
+//  */
+// Cypress.Commands.add('apiAddUserToTeam', (teamId, userId) => {
+//     cy.request({
+//         method: 'POST',
+//         url: `/api/v4/teams/${teamId}/members`,
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         body: {team_id: teamId, user_id: userId},
+//         qs: {team_id: teamId},
+//     }).then((response) => {
+//         expect(response.status).to.equal(201);
+//         return cy.wrap(response);
+//     });
+// });
 
 /**
  * Remove a User from a Team directly via API
@@ -127,29 +127,29 @@ Cypress.Commands.add('apiCreateGroupChannel', (userList = [], teamName) => {
     });
 });
 
-Cypress.Commands.add('apiGetChannelByName', (teamName, channelName) => {
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        url: `/api/v4/teams/name/${teamName}/channels/name/${channelName}`,
-    }).then((response) => {
-        expect(response.status).to.equal(200);
-        return cy.wrap({channel: response.body});
-    });
-});
+// Cypress.Commands.add('apiGetChannelByName', (teamName, channelName) => {
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         url: `/api/v4/teams/name/${teamName}/channels/name/${channelName}`,
+//     }).then((response) => {
+//         expect(response.status).to.equal(200);
+//         return cy.wrap({channel: response.body});
+//     });
+// });
 
-Cypress.Commands.add('apiAddUserToChannel', (channelId, userId) => {
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        url: '/api/v4/channels/' + channelId + '/members',
-        method: 'POST',
-        body: {
-            user_id: userId,
-        },
-    }).then((response) => {
-        expect(response.status).to.equal(201);
-        return cy.wrap({member: response.body});
-    });
-});
+// Cypress.Commands.add('apiAddUserToChannel', (channelId, userId) => {
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         url: '/api/v4/channels/' + channelId + '/members',
+//         method: 'POST',
+//         body: {
+//             user_id: userId,
+//         },
+//     }).then((response) => {
+//         expect(response.status).to.equal(201);
+//         return cy.wrap({member: response.body});
+//     });
+// });
 
 /**
  * Remove a User from a Channel directly via API
@@ -169,38 +169,38 @@ Cypress.Commands.add('removeUserFromChannel', (channelId, userId) => {
     });
 });
 
-Cypress.Commands.add('apiCreateChannel', (teamId, name, displayName, type = 'O', purpose = '', header = '', unique = true) => {
-    const randomSuffix = getRandomId();
+// Cypress.Commands.add('apiCreateChannel', (teamId, name, displayName, type = 'O', purpose = '', header = '', unique = true) => {
+//     const randomSuffix = getRandomId();
 
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        url: '/api/v4/channels',
-        method: 'POST',
-        body: {
-            team_id: teamId,
-            name: unique ? `${name}-${randomSuffix}` : name,
-            display_name: unique ? `${displayName} ${randomSuffix}` : displayName,
-            type,
-            purpose,
-            header,
-        },
-    }).then((response) => {
-        expect(response.status).to.equal(201);
-        return cy.wrap({channel: response.body});
-    });
-});
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         url: '/api/v4/channels',
+//         method: 'POST',
+//         body: {
+//             team_id: teamId,
+//             name: unique ? `${name}-${randomSuffix}` : name,
+//             display_name: unique ? `${displayName} ${randomSuffix}` : displayName,
+//             type,
+//             purpose,
+//             header,
+//         },
+//     }).then((response) => {
+//         expect(response.status).to.equal(201);
+//         return cy.wrap({channel: response.body});
+//     });
+// });
 
-Cypress.Commands.add('apiPatchChannel', (channelId, channelData) => {
-    return cy.request({
-        headers: {'X-Requested-With': 'XMLHttpRequest'},
-        method: 'PUT',
-        url: `/api/v4/channels/${channelId}/patch`,
-        body: channelData,
-    }).then((response) => {
-        expect(response.status).to.equal(200);
-        return cy.wrap({channel: response.body});
-    });
-});
+// Cypress.Commands.add('apiPatchChannel', (channelId, channelData) => {
+//     return cy.request({
+//         headers: {'X-Requested-With': 'XMLHttpRequest'},
+//         method: 'PUT',
+//         url: `/api/v4/channels/${channelId}/patch`,
+//         body: channelData,
+//     }).then((response) => {
+//         expect(response.status).to.equal(200);
+//         return cy.wrap({channel: response.body});
+//     });
+// });
 
 Cypress.Commands.add('apiDeleteChannel', (channelId) => {
     return cy.request({

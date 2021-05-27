@@ -86,19 +86,18 @@ Cypress.Commands.add('startIncidentFromPostMenu', (playbookName, incidentName) =
 });
 
 Cypress.Commands.add('openBackstage', () => {
-    cy.get('#lhsHeader', {timeout: TIMEOUTS.GIGANTIC}).should('exist').within(() => {
-        // # Wait until the channel loads enough to show the post textbox.
-        cy.get('#post-create').should('exist');
-        cy.wait(2000);
+    cy.get('#lhsHeader', {timeout: TIMEOUTS.GIGANTIC}).should('exist');
+    // # Wait until the channel loads enough to show the post textbox.
+    cy.get('#post-create').should('exist');
+    cy.wait(2000);
 
-        // # Click hamburger main menu
-        cy.get('#sidebarHeaderDropdownButton').click();
+    // # Click hamburger main menu
+    cy.get('#sidebarHeaderDropdownButton').click();
 
-        // * Dropdown menu should be visible
-        cy.get('.dropdown-menu').should('exist').within(() => {
-            // 'Incident Collaboration' button should be visible, then click
-            cy.findByText('Incident Collaboration').should('exist').click();
-        });
+    // * Dropdown menu should be visible
+    cy.get('.dropdown-menu').should('exist').within(() => {
+        // 'Incident Collaboration' button should be visible, then click
+        cy.findByText('Incident Collaboration').should('exist').click();
     });
 });
 
@@ -122,7 +121,9 @@ Cypress.Commands.add('createPlaybook', (teamName, playbookName) => {
 // Select the playbook from the dropdown menu
 Cypress.Commands.add('selectPlaybookFromDropdown', (playbookName) => {
     cy.findByTestId('autoCompleteSelector').should('exist').within(() => {
-        cy.get('input').click().type(playbookName.toLowerCase());
+        // cy.get('input').click().type(playbookName.toLowerCase());
+        cy.log("PLAYBOOK NAME: ", playbookName)
+        cy.get('input').click().type(playbookName);
         cy.get('#suggestionList').contains(playbookName).click({force: true});
     });
 });

@@ -7,39 +7,19 @@
 // ***************************************************************
 
 describe('backstage', () => {
-    const playbookName = 'Playbook (' + Date.now() + ')';
-
+    let testTeam;
+    let testUser;
+    
     before(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
-
-        // # Create a playbook and start an incident.
-        cy.apiGetTeamByName('ad-1').then((team) => {
-            cy.apiGetCurrentUser().then((user) => {
-                cy.apiCreateTestPlaybook({
-                    teamId: team.id,
-                    title: playbookName,
-                    userId: user.id,
-                }).then((playbook) => {
-                    const now = Date.now();
-                    const incidentName = 'Incident (' + now + ')';
-                    cy.apiStartIncident({
-                        teamId: team.id,
-                        playbookId: playbook.id,
-                        incidentName,
-                        commanderUserId: user.id,
-                    });
-                });
-            });
+        cy.apiInitSetup().then(({team, user}) => {
+            testTeam = team;
+            testUser = user;
         });
     });
 
     beforeEach(() => {
-        // # Login as user-1
-        cy.apiLogin('user-1');
-
-        // # Navigate to the application
-        cy.visit('/ad-1/');
+        cy.apiLogin(testUser);
+        cy.visit(`/${testTeam.name}`);
     });
 
     // it('opens statistics view by default', () => {
@@ -52,7 +32,7 @@ describe('backstage', () => {
 
     it('switches to playbooks list view via header button', () => {
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
@@ -63,7 +43,7 @@ describe('backstage', () => {
 
     it('switches to incidents list view via header button', () => {
         // # Open backstage
-        cy.visit('/ad-1/com.mattermost.plugin-incident-management');
+        cy.visit(`/${testTeam.name}/com.mattermost.plugin-incident-management`);
 
         // # Switch to playbooks backstage
         cy.findByTestId('playbooksLHSButton').click();
@@ -72,6 +52,6 @@ describe('backstage', () => {
         cy.findByTestId('incidentsLHSButton').click();
 
         // * Verify that incidents are shown
-        cy.findByTestId('titleIncident').should('exist').contains('Incidents');
+        cy.findByText('What are Incidents?').should('exist').contains('Incidents');
     });
 });
