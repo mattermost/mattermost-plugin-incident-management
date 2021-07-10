@@ -468,6 +468,11 @@ func (r *Runner) actionChangeOwner(args []string) {
 		return
 	}
 
+	if targetOwnerUser.IsBot {
+		r.postCommandResponse("Cannot assign ownership to a bot.")
+		return
+	}
+
 	if currentPlaybookRun.OwnerUserID == targetOwnerUser.Id {
 		r.postCommandResponse(fmt.Sprintf("User @%s is already owner of this playbook run.", targetOwnerUsername))
 		return

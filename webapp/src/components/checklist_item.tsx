@@ -342,7 +342,7 @@ export const ChecklistItemDetails = (props: ChecklistItemDetailsProps): React.Re
     useTimeout(() => setRunning(false), running ? RunningTimeout : null);
 
     const fetchUsers = async () => {
-        return profilesInChannel;
+        return profilesInChannel.filter((p) => !p.is_bot);
     };
 
     const onAssigneeChange = async (userId?: string) => {

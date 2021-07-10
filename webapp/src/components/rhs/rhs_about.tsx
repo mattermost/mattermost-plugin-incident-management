@@ -38,7 +38,7 @@ const RHSAbout = (props: Props) => {
     }
 
     const fetchUsers = async () => {
-        return profilesInChannel;
+        return profilesInChannel.filter((p) => !p.is_bot);
     };
 
     const onSelectedProfileChange = async (userId?: string) => {

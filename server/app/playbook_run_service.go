@@ -962,7 +962,7 @@ func (s *PlaybookRunServiceImpl) IsOwner(playbookRunID, userID string) bool {
 }
 
 // ChangeOwner processes a request from userID to change the owner for playbookRunID
-// to ownerID. Changing to the same ownerID is a no-op.
+// to ownerID. Changing to the same ownerID or to a bot is a no-op.
 func (s *PlaybookRunServiceImpl) ChangeOwner(playbookRunID, userID, ownerID string) error {
 	playbookRunToModify, err := s.store.GetPlaybookRun(playbookRunID)
 	if err != nil {
@@ -980,6 +980,10 @@ func (s *PlaybookRunServiceImpl) ChangeOwner(playbookRunID, userID, ownerID stri
 	newOwner, err := s.pluginAPI.User.Get(ownerID)
 	if err != nil {
 		return errors.Wrapf(err, "failed to to resolve user %s", ownerID)
+	}
+
+	if newOwner.IsBot {
+		return nil
 	}
 
 	playbookRunToModify.OwnerUserID = ownerID
@@ -1101,6 +1105,7 @@ func (s *PlaybookRunServiceImpl) ToggleCheckedState(playbookRunID, userID string
 
 // SetAssignee sets the assignee for the specified checklist item
 // Idempotent, will not perform any actions if the checklist item is already assigned to assigneeID
+// or if the assignee is a bot
 func (s *PlaybookRunServiceImpl) SetAssignee(playbookRunID, userID, assigneeID string, checklistNumber, itemNumber int) error {
 	playbookRunToModify, err := s.checklistItemParamsVerify(playbookRunID, userID, checklistNumber, itemNumber)
 	if err != nil {
@@ -1121,6 +1126,9 @@ func (s *PlaybookRunServiceImpl) SetAssignee(playbookRunID, userID, assigneeID s
 		newUser, err2 := s.pluginAPI.User.Get(assigneeID)
 		if err2 != nil {
 			return errors.Wrapf(err, "failed to to resolve user %s", assigneeID)
+		}
+		if newUser.IsBot {
+			return nil
 		}
 		newAssigneeUsername = "@" + newUser.Username
 	}

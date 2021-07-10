@@ -295,7 +295,7 @@ type PlaybookRunService interface {
 	IsOwner(playbookRunID string, userID string) bool
 
 	// ChangeOwner processes a request from userID to change the owner for playbookRunID
-	// to ownerID. Changing to the same ownerID is a no-op.
+	// to ownerID. Changing to the same ownerID or to a bot is a no-op.
 	ChangeOwner(playbookRunID string, userID string, ownerID string) error
 
 	// ModifyCheckedState modifies the state of the specified checklist item
@@ -307,6 +307,7 @@ type PlaybookRunService interface {
 
 	// SetAssignee sets the assignee for the specified checklist item
 	// Idempotent, will not perform any actions if the checklist item is already assigned to assigneeID
+	// or if the assignee is a bot
 	SetAssignee(playbookRunID, userID, assigneeID string, checklistNumber, itemNumber int) error
 
 	// RunChecklistItemSlashCommand executes the slash command associated with the specified checklist item.
