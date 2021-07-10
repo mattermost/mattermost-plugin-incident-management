@@ -14,9 +14,11 @@ import {
 import {currentPlaybookRun} from 'src/selectors';
 import RHSAbout from 'src/components/rhs/rhs_about';
 import RHSChecklists from 'src/components/rhs/rhs_checklists';
+import {useProfilesInCurrentChannel} from 'src/hooks';
 
 const RHSRunDetails = () => {
     const playbookRun = useSelector(currentPlaybookRun);
+    useProfilesInCurrentChannel();
 
     if (!playbookRun) {
         return null;

@@ -3,15 +3,16 @@
 
 import React from 'react';
 import styled from 'styled-components';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {getProfilesInCurrentChannel} from 'mattermost-redux/selectors/entities/users';
 
 import {PlaybookRun} from 'src/types/playbook_run';
-
 import {setOwner} from 'src/client';
 import ProfileSelector from 'src/components/profile/profile_selector';
 import './playbook_run_details.scss';
 import PostCard from 'src/components/rhs/post_card';
-import {useLatestUpdate, useProfilesInCurrentChannel} from 'src/hooks';
+import {useLatestUpdate} from 'src/hooks';
 import PostText from 'src/components/post_text';
 import {updateStatus} from 'src/actions';
 import Duration from '../duration';
@@ -22,7 +23,7 @@ interface Props {
 
 const RHSAbout = (props: Props) => {
     const dispatch = useDispatch();
-    const profilesInChannel = useProfilesInCurrentChannel();
+    const profilesInChannel = useSelector(getProfilesInCurrentChannel);
     const latestUpdatePost = useLatestUpdate(props.playbookRun);
 
     let description = <PostText text={props.playbookRun.description}/>;

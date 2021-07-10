@@ -186,14 +186,18 @@ export function useExperimentalFeaturesEnabled() {
 export function useProfilesInChannel(channelId: string) {
     const dispatch = useDispatch() as DispatchFunc;
     const profilesInChannel = useSelector((state) => getProfileSetForChannel(state as GlobalState, channelId));
+    const [fetched, setFetched] = useState(false);
 
     useEffect(() => {
         if (profilesInChannel.length > 0) {
             return;
         }
 
-        dispatch(getProfilesInChannel(channelId, 0, PROFILE_CHUNK_SIZE));
-    }, [channelId, profilesInChannel]);
+        if (!fetched) {
+            dispatch(getProfilesInChannel(channelId, 0, PROFILE_CHUNK_SIZE));
+            setFetched(true);
+        }
+    }, [channelId, profilesInChannel, fetched]);
 
     return profilesInChannel;
 }
