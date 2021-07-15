@@ -9,19 +9,16 @@ import styled from 'styled-components';
 import {GlobalState} from 'mattermost-redux/types/store';
 import {Team} from 'mattermost-redux/types/teams';
 import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
-import {UserProfile} from 'mattermost-redux/types/users';
 
 import TextWithTooltip from 'src/components/widgets/text_with_tooltip';
 import {PlaybookRun, playbookRunCurrentStatus} from 'src/types/playbook_run';
 import Duration from 'src/components/duration';
 import {navigateToTeamPluginUrl} from 'src/browser_routing';
-import {lastUpdatedByPlaybookRunId} from 'src/selectors';
 import Profile from 'src/components/profile/profile';
 import StatusBadge from 'src/components/backstage/playbook_runs/status_badge';
-import {useProfilesInChannel} from 'src/hooks';
 import {Checklist, ChecklistItemState} from 'src/types/playbook';
 import ProgressBar from 'src/components/backstage/playbooks/playbook_run_list/progress_bar';
-import {findLastUpdated, findLastUpdatedWithDefault} from 'src/utils';
+import {findLastUpdatedWithDefault} from 'src/utils';
 
 const SmallText = styled.div`
     font-weight: 400;
@@ -57,7 +54,6 @@ const SmallStatusBadge = styled(StatusBadge)`
 
 const Row = (props: { playbookRun: PlaybookRun }) => {
     const currentTeam = useSelector<GlobalState, Team>(getCurrentTeam);
-    const profilesInChannel = useProfilesInChannel(props.playbookRun.channel_id);
     const [completedTasks, totalTasks] = tasksCompletedTotal(props.playbookRun.checklists);
 
     function openPlaybookRunDetails(playbookRun: PlaybookRun) {
@@ -103,7 +99,7 @@ const Row = (props: { playbookRun: PlaybookRun }) => {
             </div>
             <div className='col-sm-2'>
                 <SmallProfile userId={props.playbookRun.owner_user_id}/>
-                <SmallText>{participantsText(profilesInChannel)}</SmallText>
+                <SmallText>{participantsText(props.playbookRun.participant_ids)}</SmallText>
             </div>
             <div className='col-sm-2'>
                 <NormalText>{completedTasks + ' / ' + totalTasks}</NormalText>
@@ -116,8 +112,8 @@ const Row = (props: { playbookRun: PlaybookRun }) => {
     );
 };
 
-const participantsText = (participants: UserProfile[]) => {
-    const num = participants.length - 1;
+const participantsText = (participantIds: string[]) => {
+    const num = participantIds.length;
     const suffix = num === 1 ? '' : 's';
     return num + ' participant' + suffix;
 };

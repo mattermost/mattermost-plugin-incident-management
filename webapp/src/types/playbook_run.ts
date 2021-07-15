@@ -29,6 +29,7 @@ export interface PlaybookRun {
     retrospective_published_at: number;
     retrospective_was_canceled: boolean;
     retrospective_reminder_interval_seconds: number;
+    participant_ids: string[];
 }
 
 export interface StatusPost {
@@ -83,7 +84,8 @@ export function isPlaybookRun(arg: any): arg is PlaybookRun {
         arg.status_posts && Array.isArray(arg.status_posts) && arg.status_posts.every(isStatusPost) &&
         typeof arg.reminder_post_id === 'string' &&
         typeof arg.broadcast_channel_id === 'string' &&
-        arg.timeline_events && Array.isArray(arg.timeline_events) && arg.timeline_events.every(isTimelineEvent));
+        arg.timeline_events && Array.isArray(arg.timeline_events) && arg.timeline_events.every(isTimelineEvent) &&
+        arg.participant_ids && Array.isArray(arg.participant_ids) && arg.participant_ids.every(isString));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,6 +120,10 @@ export function isTimelineEvent(arg: any): arg is TimelineEvent {
         typeof arg.post_id === 'string' &&
         typeof arg.subject_user_id === 'string' &&
         typeof arg.creator_user_id === 'string');
+}
+
+function isString(arg: any): arg is string {
+    return Boolean(typeof arg === 'string');
 }
 
 export function playbookRunCurrentStatusPost(playbookRun: PlaybookRun): StatusPost | undefined {

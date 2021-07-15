@@ -12,17 +12,14 @@ import {getUser} from 'mattermost-redux/selectors/entities/users';
 
 import ProfileWithPosition
     from 'src/components/backstage/playbook_runs/playbook_run_backstage/overview/profile_w_position';
-
 import {PlaybookRun} from 'src/types/playbook_run';
-
 import {
     Content,
     SecondaryButtonRight,
     TabPageContainer,
     Title,
 } from 'src/components/backstage/playbook_runs/shared';
-
-import {useProfilesInChannel} from 'src/hooks';
+import {useEnsureProfiles} from 'src/hooks';
 import {navigateToUrl} from 'src/browser_routing';
 
 const StyledContent = styled(Content)`
@@ -44,30 +41,35 @@ interface Props {
     playbookRun: PlaybookRun;
 }
 
-const Participants = (props: Props) => {
-    const profilesInChannel = useProfilesInChannel(props.playbookRun.channel_id);
+const Participants = (
+    {
+        playbookRun,
+        playbookRun: {participant_ids},
+    }: Props) => {
+    useEnsureProfiles(participant_ids);
 
-    const profilesExceptTwoMains = profilesInChannel.filter((u) => u.id !== props.playbookRun.owner_user_id && u.id !== props.playbookRun.reporter_user_id);
+    const profilesExceptTwoMains = participant_ids
+        .filter((id) => id !== playbookRun.owner_user_id && id !== playbookRun.reporter_user_id);
 
     return (
         <TabPageContainer>
-            <Title>{`Participants (${profilesInChannel.length})`}</Title>
+            <Title>{`Participants (${participant_ids.length})`}</Title>
             <StyledContent>
                 <Heading>{'Owner'}</Heading>
                 <Participant
-                    userId={props.playbookRun.owner_user_id}
+                    userId={playbookRun.owner_user_id}
                     isOwner={true}
                 />
                 <Heading>{'Reporter'}</Heading>
-                <Participant userId={props.playbookRun.reporter_user_id}/>
+                <Participant userId={playbookRun.reporter_user_id}/>
                 {
                     profilesExceptTwoMains.length > 0 &&
                     <>
                         <Heading>{'Channel members'}</Heading>
-                        {profilesExceptTwoMains.map((o) => (
+                        {profilesExceptTwoMains.map((id) => (
                             <Participant
-                                key={o.id}
-                                userId={o.id}
+                                key={id}
+                                userId={id}
                             />
                         ))}
                     </>
@@ -79,17 +81,22 @@ const Participants = (props: Props) => {
 
 export default Participants;
 
-function Participant(props: { userId: string, isOwner?: boolean }) {
-    const [showMessage, setShowMessage] = useState(Boolean(props.isOwner));
+interface ParticipantProps {
+    userId: string;
+    isOwner?: boolean;
+}
+
+function Participant({userId, isOwner}: ParticipantProps) {
+    const [showMessage, setShowMessage] = useState(Boolean(isOwner));
     const team = useSelector(getCurrentTeam);
-    const user = useSelector<GlobalState, UserProfile>((state) => getUser(state, props.userId));
+    const user = useSelector<GlobalState, UserProfile>((state) => getUser(state, userId));
 
     return (
         <ParticipantRow
             onMouseEnter={() => setShowMessage(true)}
-            onMouseLeave={() => !props.isOwner && setShowMessage(false)}
+            onMouseLeave={() => !isOwner && setShowMessage(false)}
         >
-            <ProfileWithPosition userId={props.userId}/>
+            <ProfileWithPosition userId={userId}/>
             {showMessage && (
                 <SecondaryButtonRight
                     onClick={() => navigateToUrl(`/${team.name}/messages/@${user.username}`)}

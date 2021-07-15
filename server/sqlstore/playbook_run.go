@@ -30,6 +30,7 @@ type sqlPlaybookRun struct {
 	ChecklistsJSON              json.RawMessage
 	ConcatenatedInvitedUserIDs  string
 	ConcatenatedInvitedGroupIDs string
+	ConcatenatedParticipantIDs  string
 }
 
 // playbookRunStore holds the information needed to fulfill the methods in the store interface.
@@ -110,6 +111,29 @@ func applyPlaybookRunFilterOptionsSort(builder sq.SelectBuilder, options app.Pla
 
 // NewPlaybookRunStore creates a new store for playbook run ServiceImpl.
 func NewPlaybookRunStore(pluginAPI PluginAPIClient, log bot.Logger, sqlStore *SQLStore) app.PlaybookRunStore {
+	// construct the participants list so that the frontend doesn't have to query the server, bc if
+	// the user is not a member of the channel they won't have permissions to get the user list
+	participantsCol := `
+        COALESCE(
+			(SELECT string_agg(cm.UserId, ',')
+				FROM IR_Incident as i2
+					JOIN ChannelMembers as cm on cm.ChannelId = i2.ChannelId
+				WHERE i2.Id = i.Id
+				AND cm.UserId NOT IN (SELECT UserId FROM bots)
+			), ''
+        ) AS ConcatenatedParticipantIDs`
+	if sqlStore.db.DriverName() == model.DATABASE_DRIVER_MYSQL {
+		participantsCol = `
+        COALESCE(
+			(SELECT group_concat(cm.UserId separator ',')
+				FROM IR_Incident as i2
+					JOIN ChannelMembers as cm on cm.ChannelId = i2.ChannelId
+				WHERE i2.Id = i.Id
+				AND cm.UserId NOT IN (SELECT UserId FROM bots)
+			), ''
+        ) AS ConcatenatedParticipantIDs`
+	}
+
 	// When adding a Playbook Run column #1: add to this select
 	playbookRunSelect := sqlStore.builder.
 		Select("i.ID", "c.DisplayName AS Name", "i.Description", "i.CommanderUserID AS OwnerUserID", "i.TeamID", "i.ChannelID",
@@ -118,6 +142,7 @@ func NewPlaybookRunStore(pluginAPI PluginAPIClient, log bot.Logger, sqlStore *SQ
 			"COALESCE(ReminderMessageTemplate, '') ReminderMessageTemplate", "ConcatenatedInvitedUserIDs", "ConcatenatedInvitedGroupIDs", "DefaultCommanderID AS DefaultOwnerID",
 			"AnnouncementChannelID", "WebhookOnCreationURL", "Retrospective", "MessageOnJoin", "RetrospectivePublishedAt", "RetrospectiveReminderIntervalSeconds",
 			"RetrospectiveWasCanceled", "WebhookOnStatusUpdateURL", "ExportChannelOnArchiveEnabled").
+		Column(participantsCol).
 		From("IR_Incident AS i").
 		Join("Channels AS c ON (c.Id = i.ChannelId)")
 
@@ -817,6 +842,11 @@ func (s *playbookRunStore) toPlaybookRun(rawPlaybookRun sqlPlaybookRun) (*app.Pl
 	playbookRun.InvitedGroupIDs = []string(nil)
 	if rawPlaybookRun.ConcatenatedInvitedGroupIDs != "" {
 		playbookRun.InvitedGroupIDs = strings.Split(rawPlaybookRun.ConcatenatedInvitedGroupIDs, ",")
+	}
+
+	playbookRun.ParticipantIDs = []string(nil)
+	if rawPlaybookRun.ConcatenatedParticipantIDs != "" {
+		playbookRun.ParticipantIDs = strings.Split(rawPlaybookRun.ConcatenatedParticipantIDs, ",")
 	}
 
 	return &playbookRun, nil

@@ -65,6 +65,8 @@ func setupSQLStore(t *testing.T, db *sqlx.DB) (bot.Logger, *SQLStore) {
 
 	setupChannelsTable(t, db)
 	setupPostsTable(t, db)
+	setupBotsTable(t, db)
+	setupChannelMembersTable(t, db)
 
 	if currentSchemaVersion.LT(LatestVersion()) {
 		err = sqlStore.Migrate(currentSchemaVersion)
@@ -400,6 +402,34 @@ func setupPostsTable(t testing.TB, db *sqlx.DB) {
 			  KEY idx_posts_channel_id_delete_at_create_at (ChannelId,DeleteAt,CreateAt),
 			  FULLTEXT KEY idx_posts_message_txt (Message),
 			  FULLTEXT KEY idx_posts_hashtags_txt (Hashtags)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+		`)
+	require.NoError(t, err)
+}
+
+func setupBotsTable(t testing.TB, db *sqlx.DB) {
+	t.Helper()
+
+	// This is completely handmade
+	if db.DriverName() == model.DATABASE_DRIVER_POSTGRES {
+		_, err := db.Exec(`
+			CREATE TABLE IF NOT EXISTS public.bots (
+				userid character varying(26) NOT NULL,
+				description character varying(1024),
+			    ownerid character varying(190)
+			);
+		`)
+		require.NoError(t, err)
+
+		return
+	}
+
+	// handmade
+	_, err := db.Exec(`
+			CREATE TABLE IF NOT EXISTS bots (
+				userid varchar(26) NOT NULL,
+				description varchar(1024),
+			    ownerid varchar(190)
 			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 		`)
 	require.NoError(t, err)
