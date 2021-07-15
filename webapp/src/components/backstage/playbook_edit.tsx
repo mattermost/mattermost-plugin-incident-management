@@ -478,6 +478,24 @@ const PlaybookEdit = (props: Props) => {
         setChangesMade(true);
     };
 
+    const handleOnAppendKeyword = (keyword: string) => {
+        setPlaybook({
+            ...playbook,
+            signal_any_keywords: [...playbook.signal_any_keywords, keyword],
+        });
+        setChangesMade(true);
+    };
+
+    const handleOnRemoveKeyword = (i: number) => {
+        const newKeywords = [...playbook.signal_any_keywords];
+        newKeywords.splice(i, 1);
+        setPlaybook({
+            ...playbook,
+            signal_any_keywords: newKeywords,
+        });
+        setChangesMade(true);
+    };
+
     if (!props.isNew) {
         switch (fetchingState) {
         case FetchingStateType.notFound:
@@ -699,6 +717,8 @@ const PlaybookEdit = (props: Props) => {
                                     onToggleSignalAnyKeywords={handleToggleSignalAnyKeywords}
                                     signalAnyKeywordsChange={handleSignalAnyKeywordsChange}
                                     signalAnyKeywords={playbook.signal_any_keywords}
+                                    onAppendKeyword={handleOnAppendKeyword}
+                                    onRemoveKeyword={handleOnRemoveKeyword}
                                 />
                             </TabContainer>
                             <TabContainer>

@@ -7,6 +7,7 @@ import styled from 'styled-components';
 
 import {ActionFunc} from 'mattermost-redux/types/actions';
 
+import {InputKeywords} from 'src/components/backstage/automation/input_keywords';
 import {PatternedInput} from 'src/components/backstage/automation/patterned_input';
 
 import {InviteUsers} from 'src/components/backstage/automation/invite_users';
@@ -51,6 +52,8 @@ interface Props {
     onToggleSignalAnyKeywords: () => void;
     signalAnyKeywordsChange: (keywords: string) => void;
     signalAnyKeywords: string[];
+    onAppendKeyword: (keywords: string) => void;
+    onRemoveKeyword: (i: number) => void;
 }
 
 export const AutomationSettings = (props: Props) => {
@@ -61,17 +64,16 @@ export const AutomationSettings = (props: Props) => {
                     {'Prompt to run the playbook when a user posts a message'}
                 </SectionTitle>
                 <Setting id={'signal-any-keywords'}>
-                    <PatternedInput
+                    <InputKeywords
                         enabled={props.signalAnyKeywordsEnabled}
                         onToggle={props.onToggleSignalAnyKeywords}
-                        input={props.signalAnyKeywords.join(',')}
-                        onChange={props.signalAnyKeywordsChange}
-                        pattern={'[\\s\\S]*'} // pretty much everything
-                        placeholderText={'Add comma separated keywords'}
                         textOnToggle={'Containing any of these keywords'}
-                        type={'text'}
-                        errorText={'Keywords are not valid.'} // this should not happen
+                        placeholderText={'Add keywords'}
+                        keywords={props.signalAnyKeywords}
+                        onAppendKeyword={props.onAppendKeyword}
+                        onRemoveKeyword={props.onRemoveKeyword}
                     />
+
                 </Setting>
             </Section>
             <Section>
