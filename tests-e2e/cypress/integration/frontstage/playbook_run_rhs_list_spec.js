@@ -1,6 +1,8 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
+import * as TIMEOUTS from '../../fixtures/timeouts';
+
 describe('rhs playbook run list', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
     const playbook2Name = 'Playbook (' + (Date.now() + 1) + ')';
@@ -123,7 +125,7 @@ describe('rhs playbook run list', () => {
             });
 
             // # Navigate directly to a non-playbook run channel
-            cy.wait(1000).visit(`/${teamName1}/channels/town-square`);
+            cy.wait(TIMEOUTS.ONE_SEC).visit(`/${teamName1}/channels/town-square`);
 
             // # Ensure the channel is loaded before continuing (allows redux to sync).
             cy.get('#centerChannelFooter').findByTestId('post_textbox').should('exist');
@@ -1088,7 +1090,7 @@ describe('rhs playbook run list', () => {
 
                 // # User-1 closes the playbook run
                 // TODO: Waiting here because of https://mattermost.atlassian.net/browse/MM-29617
-                cy.wait(500).apiUpdateStatus({
+                cy.wait(TIMEOUTS.HALF_SEC).apiUpdateStatus({
                     playbookRunId,
                     userId,
                     teamId: teamId1,

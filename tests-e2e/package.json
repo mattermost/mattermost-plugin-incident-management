@@ -1,29 +1,36 @@
 {
   "dependencies": {
-    "@testing-library/cypress": "7.0.0",
-    "cypress-terminal-report": "^2.0.0",
-    "deepmerge": "^4.2.2"
+    "@testing-library/cypress": "7.0.6",
+    "cypress": "7.7.0",
+    "cypress-file-upload": "5.0.8",
+    "cypress-multi-reporters": "1.5.0",
+    "cypress-plugin-tab": "1.0.5",
+    "cypress-terminal-report": "3.2.2",
+    "cypress-wait-until": "1.7.1",
+    "deepmerge": "^4.2.2",
+    "mocha-junit-reporter": "2.0.0"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",
-    "cypress": "5.1.0",
-    "cypress-file-upload": "4.1.1",
-    "cypress-multi-reporters": "1.5.0",
-    "cypress-wait-until": "1.7.1",
-    "eslint": "6.8.0",
-    "eslint-plugin-cypress": "2.10.3",
-    "eslint-plugin-header": "3.0.0",
-    "eslint-plugin-import": "2.20.1",
-    "eslint-plugin-mattermost": "github:mattermost/eslint-plugin-mattermost#070ce792d105482ffb2b27cfc0b7e78b3d20acee",
-    "eslint-plugin-react": "7.19.0",
-    "mocha-junit-reporter": "2.0.0"
+    "cross-env": "^7.0.3",
+    "eslint": "7.30.0",
+    "eslint-plugin-cypress": "2.11.3",
+    "eslint-plugin-header": "3.1.1",
+    "eslint-plugin-import": "2.23.4",
+    "eslint-plugin-mattermost": "github:mattermost/eslint-plugin-mattermost#46ad99355644a719bf32082f472048f526605181",
+    "eslint-plugin-react": "7.24.0"
   },
   "scripts": {
-    "delete:results": "rm cypress/results/* || true",
+    "cypress:open": "cross-env TZ=Etc/UTC cypress open",
+    "cypress:run": "cross-env TZ=Etc/UTC cypress run",
+    "cypress:run:chrome": "cross-env TZ=Etc/UTC cypress run --browser chrome",
+    "cypress:run:firefox": "cross-env TZ=Etc/UTC cypress run --browser firefox",
+    "cypress:run:edge": "cross-env TZ=Etc/UTC cypress run --browser edge",
+    "cypress:run:electron": "cross-env TZ=Etc/UTC cypress run --browser electron",
+    "clean": "rm cypress/results/* || true",
+    "pretest": "npm run clean",
+    "test": "cross-env TZ=Etc/UTC cypress run",
     "check": "eslint --ext .js . --quiet --cache",
-    "fix": "eslint --ext .js . --quiet --fix --cache",
-    "cypress:open": "cypress open",
-    "pretest": "npm run delete:results",
-    "test": "cypress run"
+    "fix": "eslint --ext .js . --quiet --fix --cache"
   }
 }

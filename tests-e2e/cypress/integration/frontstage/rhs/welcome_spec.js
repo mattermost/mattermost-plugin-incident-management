@@ -6,6 +6,8 @@
 // - [*] indicates an assertion (e.g. * Check the title)
 // ***************************************************************
 
+import * as TIMEOUTS from '../../../fixtures/timeouts';
+
 describe('playbook run rhs > welcome', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
     let teamId;
@@ -66,7 +68,7 @@ describe('playbook run rhs > welcome', () => {
             });
 
             // # Wait for background request fetching playbooks to finish.
-            cy.wait(1500);
+            cy.wait(TIMEOUTS.TWO_SEC);
 
             // * Verify there is no prompt to create a playbook run.
             cy.get('#rhsContainer').findByText('Run playbook').should('not.exist');

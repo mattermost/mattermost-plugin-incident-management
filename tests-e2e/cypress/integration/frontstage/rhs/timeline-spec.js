@@ -1,7 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import {TINY} from '../../../fixtures/timeouts';
+import {HALF_SEC} from '../../../fixtures/timeouts';
 
 describe('timeline', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
@@ -337,7 +337,7 @@ describe('timeline', () => {
 
             // # Assign Aaron to the first task
             cy.findAllByTestId('checkbox-item-container').eq(1).trigger('mouseover').within(() => {
-                cy.get('.icon-account-plus-outline').click().wait(TINY);
+                cy.get('.icon-account-plus-outline').click().wait(HALF_SEC);
                 cy.get('.playbook-run-user-select__input > input')
                     .type('aaron', {force: true, delay: 100})
                     .wait(100).type('{enter}');

@@ -6,6 +6,8 @@
 // - [*] indicates an assertion (e.g. * Check the title)
 // ***************************************************************
 
+import * as TIMEOUTS from '../../../fixtures/timeouts';
+
 describe('playbook run rhs', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
     let teamId;
@@ -50,7 +52,7 @@ describe('playbook run rhs', () => {
             cy.get('#post-create').should('exist');
 
             // # Wait a bit longer to be confident.
-            cy.wait(2000);
+            cy.wait(TIMEOUTS.TWO_SEC);
 
             // * Verify the playbook run RHS is not open.
             cy.get('#rhsContainer').should('not.exist');
@@ -84,7 +86,7 @@ describe('playbook run rhs', () => {
             cy.get('#post-create').should('exist');
 
             // # Wait a bit longer to be confident.
-            cy.wait(2000);
+            cy.wait(TIMEOUTS.TWO_SEC);
 
             // * Verify the playbook run RHS is not open.
             cy.get('#rhsContainer').should('not.exist');

@@ -6,8 +6,6 @@
 // - [*] indicates an assertion (e.g. * Check the title)
 // ***************************************************************
 
-import * as TIMEOUTS from '../../fixtures/timeouts';
-
 describe('playbook creation button', () => {
     before(() => {
         // # Login as user-1
@@ -30,9 +28,6 @@ describe('playbook creation button', () => {
 
         // # Login as user-1
         cy.apiLogin('user-1');
-
-        // # Navigate to the application
-        cy.visit('/ad-1/');
     });
 
     it('opens playbook creation page with New Playbook button', () => {
@@ -46,7 +41,7 @@ describe('playbook creation button', () => {
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'New Playbook' button
-        cy.findByText('Create playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('Create playbook').click();
 
         // * Verify a new playbook creation page opened
         verifyPlaybookCreationPageOpened(url, playbookName);
@@ -63,7 +58,7 @@ describe('playbook creation button', () => {
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'Blank'
-        cy.findByText('Blank').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('Blank').click();
 
         // * Verify a new playbook creation page opened
         verifyPlaybookCreationPageOpened(url, playbookName);
@@ -80,10 +75,7 @@ describe('playbook creation button', () => {
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'Service Outage Incident'
-        cy.findByText('Service Outage Incident')
-            .should('be.visible')
-            .click()
-            .wait(TIMEOUTS.TINY);
+        cy.findByText('Service Outage Incident').click();
 
         // * Verify a new 'Service Outage Incident' creation page is opened
         verifyPlaybookCreationPageOpened(url, playbookName);
@@ -97,13 +89,13 @@ describe('playbook creation button', () => {
         cy.findByTestId('playbooksLHSButton').click();
 
         // # Click 'Create playbook' button
-        cy.findByText('Create playbook').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('Create playbook').click();
 
         // # Click 'Permissions' tab
-        cy.findByText('Permissions').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.findByText('Permissions').click();
 
         // # Click 'only selected users can access'
-        cy.get('input[name="enabled"][value="enabled"]').should('be.visible').click().wait(TIMEOUTS.TINY);
+        cy.get('input[name="enabled"][value="enabled"]').click();
 
         // * Verify that there is no Remove link when there is one member
         cy.findAllByTestId('user-line').should('have.length', 1);
@@ -132,7 +124,7 @@ function verifyPlaybookCreationPageOpened(url, playbookName) {
     cy.url().should('include', url);
 
     // * Verify the playbook name matches the one provided
-    cy.get('#playbook-name').scrollIntoView().should('be.visible').within(() => {
+    cy.get('#playbook-name').within(() => {
         cy.findByText(playbookName).should('be.visible');
     });
 

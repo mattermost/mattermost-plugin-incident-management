@@ -6,7 +6,7 @@
 // - [*] indicates an assertion (e.g. * Check the title)
 // ***************************************************************
 
-import {TINY} from '../../fixtures/timeouts';
+import {HALF_SEC} from '../../fixtures/timeouts';
 
 describe('playbook run rhs checklist', () => {
     const playbookName = 'Playbook (' + Date.now() + ')';
@@ -211,7 +211,7 @@ describe('playbook run rhs checklist', () => {
             // Hover over a checklist item at the end
             cy.findAllByTestId('checkbox-item-container').eq(10).trigger('mouseover').within(() => {
                 // Click the profile icon
-                cy.get('.icon-account-plus-outline').click().wait(TINY);
+                cy.get('.icon-account-plus-outline').click().wait(HALF_SEC);
 
                 cy.isInViewport('.playbook-run-user-select');
             });

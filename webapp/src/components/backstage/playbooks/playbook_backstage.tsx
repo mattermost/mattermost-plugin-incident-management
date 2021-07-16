@@ -60,8 +60,13 @@ const PlaybookBackstage = () => {
         const fetchStats = async () => {
             const playbookId = match.params.playbookId;
             if (playbookId) {
-                const ret = await fetchPlaybookStats(playbookId);
-                setStats(ret);
+                try {
+                    const ret = await fetchPlaybookStats(playbookId);
+                    setStats(ret);
+                } catch {
+                    // Ignore any errors here. If it fails, it's most likely also failed to fetch
+                    // the playbook above.
+                }
             }
         };
 

@@ -1,9 +1,7 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import endpoints from './endpoints.json';
-
-const playbookRunsEndpoint = endpoints.runs;
+const playbookRunsEndpoint = '/plugins/com.mattermost.plugin-incident-management/api/v0/runs';
 
 /**
  * Get all playbook runs directly via API
