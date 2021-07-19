@@ -15,11 +15,12 @@ import {
 } from 'react-beautiful-dnd';
 
 import {PlaybookRun} from 'src/types/playbook_run';
-import {toggleRHS, addNewTask, playbookRunUpdated} from 'src/actions';
+import {toggleRHS, playbookRunUpdated} from 'src/actions';
 import {ChecklistItem, ChecklistItemState, Checklist} from 'src/types/playbook';
 import {setChecklistItemState, clientReorderChecklist} from 'src/client';
 import {ChecklistItemDetails} from 'src/components/checklist_item';
 import {isMobile} from 'src/mobile';
+import CollapsibleChecklist from 'src/components/rhs/collapsible_checklist';
 
 interface Props {
     playbookRun: PlaybookRun;
@@ -32,22 +33,15 @@ const RHSChecklists = (props: Props) => {
 
     return (
         <InnerContainer>
+            <MainTitle>{'Checklists'}</MainTitle>
             {checklists.map((checklist: Checklist, checklistIndex: number) => (
-                <>
-                    <TitleLine>
-                        <Title>
-                            {checklist.title}
-                        </Title>
-                        <AddNewTask
-                            onClick={() => {
-                                dispatch(addNewTask(checklistIndex));
-                            }}
-                        >
-                            <i className='icon-plus'/>
-                            {'Add new task'}
-                        </AddNewTask>
-                    </TitleLine>
-                    <div className='checklist'>
+                <CollapsibleChecklist
+                    key={checklist.title + checklistIndex}
+                    title={checklist.title}
+                    items={checklist.items}
+                    index={checklistIndex}
+                >
+                    <ChecklistContainer className='checklist'>
                         <DragDropContext
                             onDragEnd={(result: DropResult) => {
                                 if (!result.destination) {
@@ -118,50 +112,29 @@ const RHSChecklists = (props: Props) => {
                                 )}
                             </Droppable>
                         </DragDropContext>
-                    </div>
-                </>
+                    </ChecklistContainer>
+                </CollapsibleChecklist>
             ))}
         </InnerContainer>
     );
 };
 
-const Title = styled.div`
-    font-weight: 600;
-    font-size: 14px;
-`;
-
-const TitleLine = styled.div`
-    padding: 24px 0 8px;
-    display: flex;
-    justify-content: space-between;
-`;
-
-const AddNewTask = styled.button`
-    background: transparent;
-    display: inline-flex;
-    align-items: center;
-    color: var(--button-bg);
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 9px;
-    border-radius: 4px;
-    border: 0px;
-
-    transition: all 0.15s ease-out;
-
-    &:hover {
-        background: rgba(var(--button-bg-rgb), 0.08);
-    }
-
-    &:active {
-        background: rgba(var(--button-bg-rgb), 0.16);
-    }
-`;
-
 const InnerContainer = styled.div`
     display: flex;
     flex-direction: column;
-    padding: 0 20px 24px 20px;
+    padding: 12px 12px 24px 12px;
+`;
+
+const MainTitle = styled.div`
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    margin: 0 0 0 8px;
+`;
+
+const ChecklistContainer = styled.div`
+    background-color: var(--center-channel-bg);
+    padding: 16px 12px;
 `;
 
 export default RHSChecklists;

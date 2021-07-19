@@ -186,7 +186,7 @@ describe('playbook run rhs checklist', () => {
         it('add new task', () => {
             const newTasktext = 'This is my new task' + Date.now();
 
-            cy.addNewTaskFromPostMenu(newTasktext);
+            cy.addNewTaskFromRHS(newTasktext);
 
             // Check that it was created
             cy.findByText(newTasktext).should('exist');

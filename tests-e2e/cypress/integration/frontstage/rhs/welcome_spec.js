@@ -41,6 +41,24 @@ describe('playbook run rhs > welcome', () => {
                 title: playbookName,
                 userId: user.id,
             });
+
+            // # Set all steps to true to turn off the welcome to mattermost tutorial messages
+            const preference = {
+                user_id: user.id,
+                category: 'recommended_next_steps',
+                value: 'true',
+            };
+            const adminSteps = [
+                'complete_profile',
+                'notification_setup',
+                'team_setup',
+                'invite_members',
+                'enter_support_email',
+                'hide',
+                'skip',
+            ];
+
+            cy.apiSaveUserPreference(adminSteps.map((step) => ({...preference, name: step})));
         });
     });
 
