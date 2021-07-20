@@ -8,7 +8,7 @@ import {GlobalState} from 'mattermost-redux/types/store';
 import {getCurrentChannelId} from 'mattermost-redux/selectors/entities/channels';
 
 import {setRHSOpen, setRHSViewingPlaybookRun, setRHSViewingList} from 'src/actions';
-import RHSListView from 'src/components/rhs/rhs_list_view';
+import RHSHome from 'src/components/rhs/rhs_home';
 import {currentRHSState, inPlaybookRunChannel} from 'src/selectors';
 import {RHSState} from 'src/types/rhs';
 import RHSWelcomeView from 'src/components/rhs/rhs_welcome_view';
@@ -46,7 +46,7 @@ const RightHandSidebar = () => {
         return <RHSWelcomeView/>;
     }
 
-    return <RHSListView/>;
+    return <RHSHome/>;
 };
 
 export default RightHandSidebar;

@@ -22,6 +22,7 @@
         "AWS_ACCESS_KEY_ID": "",
         "AWS_SECRET_ACCESS_KEY": ""
     },
+    "testFiles": "**/*_spec.js",
     "reporter": "cypress-multi-reporters",
     "reporterOptions": {
         "configFile": "reporter-config.json"

@@ -76,7 +76,7 @@ describe('playbook runs can be started', () => {
         });
     });
 
-    describe('via RHS', () => {
+    /* describe('via RHS', () => {
         it('while viewing a public channel', () => {
             // # Visit a public channel: off-topic
             cy.visit('/ad-1/channels/off-topic');
@@ -96,7 +96,7 @@ describe('playbook runs can be started', () => {
             cy.startPlaybookRunFromRHS(playbookName, playbookRunName);
             cy.verifyPlaybookRunActive(teamId, playbookRunName);
         });
-    });
+    }); */
 
     describe('via post menu', () => {
         it('while viewing a public channel', () => {

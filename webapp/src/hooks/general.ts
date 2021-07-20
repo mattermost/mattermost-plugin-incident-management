@@ -25,8 +25,8 @@ import {getProfileSetForChannel} from 'src/selectors';
 import {clientFetchPlaybooksCount} from 'src/client';
 import {receivedTeamNumPlaybooks} from 'src/actions';
 
-import {isCloud, isE10LicensedOrDevelopment, isE20LicensedOrDevelopment} from './license';
-import {currentTeamNumPlaybooks, globalSettings, isCurrentUserAdmin} from './selectors';
+import {isCloud, isE10LicensedOrDevelopment, isE20LicensedOrDevelopment} from '../license';
+import {currentTeamNumPlaybooks, globalSettings, isCurrentUserAdmin} from '../selectors';
 
 /**
  * Hook that calls handler when targetKey is pressed.
@@ -239,7 +239,7 @@ export function useNumPlaybooksInCurrentTeam() {
     useEffect(() => {
         const fetch = async () => {
             const response = await clientFetchPlaybooksCount(team.id);
-            dispatch(receivedTeamNumPlaybooks(team.id, response.count));
+            dispatch(receivedTeamNumPlaybooks(team.id, response?.count ?? 0));
         };
 
         fetch();
@@ -345,3 +345,4 @@ export function useOpenCloudModal() {
         }));
     };
 }
+

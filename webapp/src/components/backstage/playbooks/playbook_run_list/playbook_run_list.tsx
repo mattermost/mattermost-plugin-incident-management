@@ -26,7 +26,7 @@ import {fetchOwnersInTeam, fetchPlaybookRuns} from 'src/client';
 import ProfileSelector from 'src/components/profile/profile_selector';
 import {SortableColHeader} from 'src/components/sortable_col_header';
 import {PaginationRow} from 'src/components/pagination_row';
-import {Playbook} from 'src/types/playbook';
+import {PlaybookWithChecklist} from 'src/types/playbook';
 
 import 'src/components/backstage/playbook_runs/playbook_run_list/playbook_run_list.scss';
 import Row from 'src/components/backstage/playbooks/playbook_run_list/row';
@@ -70,7 +70,7 @@ const statusOptions: StatusOption[] = [
 ];
 
 interface Props {
-    playbook: Playbook | null
+    playbook: PlaybookWithChecklist | null
     fetchParamsTime?: FetchPlaybookRunsParamsTime
     filterPill?: JSX.Element | null
 }

@@ -1,11 +1,15 @@
 // Copyright (c) 2015-present Mattermost, Inc. All Rights Reserved.
 // See LICENSE.txt for license information.
 
-import React, {FC} from 'react';
+import React from 'react';
 import {useDispatch, useSelector} from 'react-redux';
 import styled from 'styled-components';
 
 import {GlobalState} from 'mattermost-redux/types/store';
+
+import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+
+import {Team} from 'mattermost-redux/types/teams';
 
 import {PlaybookRun, playbookRunCurrentStatus} from 'src/types/playbook_run';
 
@@ -15,6 +19,7 @@ import LeftChevron from 'src/components/assets/icons/left_chevron';
 import {RHSState} from 'src/types/rhs';
 import {setRHSViewingList} from 'src/actions';
 import {currentPlaybookRun, currentRHSState} from 'src/selectors';
+import {teamPluginUrl} from 'src/browser_routing';
 
 const RHSTitleContainer = styled.div`
     display: flex;
@@ -36,10 +41,14 @@ const Button = styled.button`
     align-items: center;
 `;
 
+// @ts-ignore
+const {Link} = window.ReactRouterDom;
+
 const RHSTitle = () => {
     const dispatch = useDispatch();
     const playbookRun = useSelector<GlobalState, PlaybookRun | undefined>(currentPlaybookRun);
     const rhsState = useSelector<GlobalState, RHSState>(currentRHSState);
+    const currentTeam = useSelector<GlobalState, Team>(getCurrentTeam);
 
     if (rhsState === RHSState.ViewingPlaybookRun) {
         return (
@@ -49,7 +58,8 @@ const RHSTitle = () => {
                     data-testid='back-button'
                 >
                     <LeftChevron/>
-                </Button><RHSTitleText data-testid='rhs-title'>{playbookRun?.name || 'Runs'}</RHSTitleText>
+                </Button>
+                <RHSTitleText data-testid='rhs-title'>{playbookRun?.name || 'Runs'}</RHSTitleText>
                 {playbookRun && (
                     <StatusBadge
                         status={playbookRunCurrentStatus(playbookRun)}
@@ -62,7 +72,7 @@ const RHSTitle = () => {
 
     return (
         <RHSTitleText>
-            {'Runs in progress'}
+            {'Playbooks'}
         </RHSTitleText>
     );
 };

@@ -114,6 +114,9 @@ const (
 
 	// SortByTitle sorts by the "title" field.
 	SortByTitle Sort = "title"
+
+	// SortByRuns sorts by the number of times a playbook has been run.
+	SortByRuns Sort = "runs"
 )
 
 // SortDirection determines whether results are sorted ascending or descending.

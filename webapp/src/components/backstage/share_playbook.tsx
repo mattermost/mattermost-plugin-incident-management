@@ -24,7 +24,7 @@ export interface SharePlaybookProps {
     onClear: () => void;
     searchProfiles: (term: string) => ActionFunc;
     getProfiles: () => ActionFunc;
-    playbook: Playbook;
+    memberIds: Playbook['member_ids'];
 }
 
 const UserSelectorWrapper = styled.div`
@@ -41,7 +41,7 @@ const SharePlaybook = (props: SharePlaybookProps) => {
 
     const currentTeamName = useSelector<GlobalState, string>(selectCurrentTeamName);
 
-    const enabled = props.playbook.member_ids.length > 0;
+    const enabled = props.memberIds.length > 0;
 
     const handleDisable = () => {
         props.onClear();
@@ -95,7 +95,7 @@ const SharePlaybook = (props: SharePlaybookProps) => {
                         {'Only users who you select will be able to edit or run this playbook.'}
                     </BackstageSubheaderDescription>
                     <SelectUsersBelow
-                        userIds={props.playbook.member_ids}
+                        userIds={props.memberIds}
                         onAddUser={props.onAddUser}
                         onRemoveUser={props.onRemoveUser}
                         searchProfiles={props.searchProfiles}

@@ -170,11 +170,3 @@ export const fetchParamsTimeEqual = (a: FetchPlaybookRunsParamsTime, b: FetchPla
         a.started_gte === b.started_gte &&
         a.started_lt === b.started_lt);
 };
-
-export interface FetchPlaybooksParams {
-    team_id?: string;
-    page?: number;
-    per_page?: number;
-    sort?: string;
-    direction?: string;
-}

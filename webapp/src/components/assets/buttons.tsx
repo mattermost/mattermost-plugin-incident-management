@@ -6,12 +6,12 @@ import styled from 'styled-components';
 
 import UpgradeBadge from 'src/components/backstage/upgrade_badge';
 
-export const PrimaryButton = styled.button`
+export const Button = styled.button`
     display: inline-flex;
     align-items: center;
     height: 40px;
-    background: var(--button-bg);
-    color: var(--button-color);
+    background: rgba(var(--center-channel-color-rgb), 0.08);
+    color: rgba(var(--center-channel-color-rgb), 0.72);
     border-radius: 4px;
     border: 0px;
     font-weight: 600;
@@ -19,6 +19,30 @@ export const PrimaryButton = styled.button`
     align-items: center;
     padding: 0 20px;
     position: relative;
+
+    &:hover{
+        background: rgba(var(--center-channel-color-rgb), 0.12);
+    }
+
+    &:disabled {
+        color: rgba(var(--center-channel-color-rgb), 0.32);
+        background: rgba(var(--center-channel-color-rgb), 0.08);
+    }
+
+    i {
+        display: flex;
+        font-size: 18px;
+    }
+`;
+
+export const PrimaryButton = styled(Button)`
+    background: var(--button-bg);
+    color: var(--button-color);
+    transition: background 0.15s ease-out;
+
+    &:active  {
+        background: rgba(var(--button-bg-rgb), 0.8);
+    }
 
     &:before {
         content: '';
@@ -30,26 +54,23 @@ export const PrimaryButton = styled.button`
         position: absolute;
         background: var(--center-channel-color-16);
         opacity: 0;
+        border-radius: 4px;
     }
 
     &:hover:enabled {
+        background: var(--button-bg);
         &:before {
             opacity: 1;
         }
     }
+`;
 
-    &:active  {
-        background: rgba(var(--button-bg-rgb), 0.8);
-    }
-
-    &:disabled {
-        color: rgba(var(--center-channel-color-rgb), 0.32);
-        background: rgba(var(--center-channel-color-rgb), 0.08);
-    }
-
-    i {
-        display: flex;
-        font-size: 18px;
+export const SubtlePrimaryButton = styled(Button)`
+    background: rgba(var(--button-bg-rgb), 0.08);
+    color: var(--button-bg);
+    &:hover,
+    &:active {
+        background: rgba(var(--button-bg-rgb), 0.12);
     }
 `;
 

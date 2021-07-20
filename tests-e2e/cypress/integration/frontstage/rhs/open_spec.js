@@ -419,9 +419,9 @@ describe('playbook run rhs', () => {
                 cy.get('#incidentIcon').should('exist').click({force: true});
             });
 
-            // * Verify the playbook run RHS is open.
+            // * Verify RHS Home is open.
             cy.get('#rhsContainer').should('exist').within(() => {
-                cy.findByText('Runs in progress').should('exist');
+                cy.findByText('Playbooks').should('exist');
             });
 
             // # Click the icon again

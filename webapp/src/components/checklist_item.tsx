@@ -25,7 +25,7 @@ import {ChecklistItemButton} from 'src/components/checklist_item_input';
 import Profile from 'src/components/profile/profile';
 import ProfileSelector from 'src/components/profile/profile_selector';
 import {HoverMenu, HoverMenuButton} from 'src/components/rhs/rhs_shared';
-import {formatText, messageHtmlToComponent} from 'src/components/shared';
+import {formatText, messageHtmlToComponent} from 'src/webapp_globals';
 import ConfirmModal from 'src/components/widgets/confirmation_modal';
 import {useClickOutsideRef, useProfilesInCurrentChannel, useTimeout} from 'src/hooks';
 import {ChannelNamesMap} from 'src/types/backstage';

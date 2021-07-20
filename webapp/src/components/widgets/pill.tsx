@@ -18,7 +18,7 @@ const Pill = (props: Props) => (
     </PillBox>
 );
 
-const PillBox = styled.div`
+export const PillBox = styled.div`
     display: inline-block;
     background-color: rgba(var(--center-channel-color-rgb), 0.08);
     color: var(--center-channel-color);

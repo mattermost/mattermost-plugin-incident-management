@@ -404,6 +404,8 @@ func parseGetPlaybooksOptions(u *url.URL) (app.PlaybookFilterOptions, error) {
 		sortField = app.SortByStages
 	case "steps":
 		sortField = app.SortBySteps
+	case "runs":
+		sortField = app.SortByRuns
 	default:
 		return app.PlaybookFilterOptions{}, errors.Errorf("bad parameter 'sort' (%s): it should be empty or one of 'title', 'stages' or 'steps'", param)
 	}

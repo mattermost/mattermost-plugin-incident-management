@@ -15,7 +15,7 @@ import {Team} from 'mattermost-redux/types/teams';
 import {Tabs, TabsContent} from 'src/components/tabs';
 import {PresetTemplates} from 'src/components/backstage/template_selector';
 import {navigateToTeamPluginUrl, teamPluginErrorUrl} from 'src/browser_routing';
-import {Playbook, Checklist, emptyPlaybook} from 'src/types/playbook';
+import {DraftPlaybookWithChecklist, PlaybookWithChecklist, Checklist, emptyPlaybook} from 'src/types/playbook';
 import {savePlaybook, clientFetchPlaybook} from 'src/client';
 import {StagesAndStepsEdit} from 'src/components/backstage/stages_and_steps_edit';
 import {ErrorPageTypes, TEMPLATE_TITLE_KEY, PROFILE_CHUNK_SIZE} from 'src/constants';
@@ -143,7 +143,7 @@ const FetchingStateType = {
 };
 
 // setPlaybookDefaults fills in a playbook with defaults for any fields left empty.
-const setPlaybookDefaults = (playbook: Playbook) => ({
+const setPlaybookDefaults = (playbook: DraftPlaybookWithChecklist) => ({
     ...playbook,
     title: playbook.title.trim() || 'Untitled playbook',
     checklists: playbook.checklists.map((checklist) => ({
@@ -162,14 +162,14 @@ const timerOptions = [
     {value: 3600, label: '60min'},
     {value: 14400, label: '4hr'},
     {value: 86400, label: '24hr'},
-];
+] as const;
 
-const tabInfo = [
+export const tabInfo = [
     {id: 'checklists', name: 'Checklists'},
     {id: 'templates', name: 'Templates'},
     {id: 'actions', name: 'Actions'},
     {id: 'permissions', name: 'Permissions'},
-];
+] as const;
 
 const retrospectiveReminderOptions = [
     {value: 0, label: 'Once'},
@@ -177,7 +177,7 @@ const retrospectiveReminderOptions = [
     {value: 14400, label: '4hr'},
     {value: 86400, label: '24hr'},
     {value: 604800, label: '7days'},
-];
+] as const;
 
 // @ts-ignore
 const WebappUtils = window.WebappUtils;
@@ -192,7 +192,7 @@ const PlaybookEdit = (props: Props) => {
     const currentTeam = useSelector<GlobalState, Team>(getCurrentTeam);
     const currentUserId = useSelector(getCurrentUserId);
 
-    const [playbook, setPlaybook] = useState<Playbook>({
+    const [playbook, setPlaybook] = useState<DraftPlaybookWithChecklist | PlaybookWithChecklist>({
         ...emptyPlaybook(),
         team_id: props.currentTeam.id,
     });
@@ -245,8 +245,10 @@ const PlaybookEdit = (props: Props) => {
             if (urlParams.playbookId) {
                 try {
                     const fetchedPlaybook = await clientFetchPlaybook(urlParams.playbookId);
-                    fetchedPlaybook.member_ids = fetchedPlaybook.member_ids || [currentUserId];
-                    setPlaybook(fetchedPlaybook);
+                    if (fetchedPlaybook) {
+                        fetchedPlaybook.member_ids ??= [currentUserId];
+                        setPlaybook(fetchedPlaybook);
+                    }
                     setFetchingState(FetchingStateType.fetched);
                 } catch {
                     setFetchingState(FetchingStateType.notFound);
@@ -753,7 +755,7 @@ const PlaybookEdit = (props: Props) => {
                                         onRemoveUser={handleRemoveUser}
                                         searchProfiles={searchUsers}
                                         getProfiles={getUsers}
-                                        playbook={playbook}
+                                        memberIds={playbook.member_ids}
                                         onClear={handleClearUsers}
                                     />
                                 </SidebarBlock>

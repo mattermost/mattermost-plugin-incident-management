@@ -27,7 +27,7 @@ import {useAllowRetrospectiveAccess} from 'src/hooks';
 
 import UpgradeBadge from 'src/components/backstage/upgrade_badge';
 import PlaybookIcon from 'src/components/assets/icons/playbook_icon';
-import {Playbook} from 'src/types/playbook';
+import {PlaybookWithChecklist} from 'src/types/playbook';
 import ExportLink from '../playbook_run_details/export_link';
 
 const OuterContainer = styled.div`
@@ -164,7 +164,7 @@ const PositionedUpgradeBadge = styled(UpgradeBadge)`
 const PlaybookRunBackstage = () => {
     const [playbookRun, setPlaybookRun] = useState<PlaybookRun | null>(null);
     const [playbookRunMetadata, setPlaybookRunMetadata] = useState<PlaybookRunMetadata | null>(null);
-    const [playbook, setPlaybook] = useState<Playbook | null>(null);
+    const [playbook, setPlaybook] = useState<PlaybookWithChecklist | null>(null);
     const currentTeam = useSelector<GlobalState, Team>(getCurrentTeam);
     const channel = useSelector<GlobalState, Channel | null>((state) => (playbookRun ? getChannel(state, playbookRun.channel_id) : null));
     const match = useRouteMatch<MatchParams>();
@@ -189,7 +189,7 @@ const PlaybookRunBackstage = () => {
         const fetchData = async () => {
             if (playbookRun?.playbook_id) {
                 const fetchedPlaybook = await clientFetchPlaybook(playbookRun.playbook_id);
-                setPlaybook(fetchedPlaybook);
+                setPlaybook(fetchedPlaybook!);
             }
         };
 

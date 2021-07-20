@@ -6,7 +6,7 @@ import Integrations from 'mattermost-redux/action_types/integrations';
 import {PlaybookRun} from 'src/types/playbook_run';
 
 import {RHSState, RHSTabState, TimelineEventsFilter} from 'src/types/rhs';
-import {Playbook} from 'src/types/playbook';
+import {PlaybookWithChecklist} from 'src/types/playbook';
 import {pluginId} from 'src/manifest';
 
 import {GlobalSettings} from './settings';

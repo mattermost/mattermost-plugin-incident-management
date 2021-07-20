@@ -21,6 +21,9 @@ type Playbook struct {
 	DeleteAt                             int64       `json:"delete_at"`
 	NumStages                            int64       `json:"num_stages"`
 	NumSteps                             int64       `json:"num_steps"`
+	NumRuns                              int64       `json:"num_runs"`
+	NumActions                           int64       `json:"num_actions"`
+	LastRunAt                            int64       `json:"last_run_at"`
 	Checklists                           []Checklist `json:"checklists"`
 	MemberIDs                            []string    `json:"member_ids"`
 	BroadcastChannelID                   string      `json:"broadcast_channel_id"`

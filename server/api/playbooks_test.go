@@ -1498,8 +1498,9 @@ func TestPlaybooks(t *testing.T) {
 
 func TestSortingPlaybooks(t *testing.T) {
 	playbooktest1 := app.Playbook{
-		Title:  "A",
-		TeamID: "testteamid",
+		Title:   "A",
+		TeamID:  "testteamid",
+		NumRuns: 0,
 		Checklists: []app.Checklist{
 			{
 				Title: "A",
@@ -1512,8 +1513,9 @@ func TestSortingPlaybooks(t *testing.T) {
 		},
 	}
 	playbooktest2 := app.Playbook{
-		Title:  "B",
-		TeamID: "testteamid",
+		Title:   "B",
+		TeamID:  "testteamid",
+		NumRuns: 1,
 		Checklists: []app.Checklist{
 			{
 				Title: "B",
@@ -1540,8 +1542,9 @@ func TestSortingPlaybooks(t *testing.T) {
 		},
 	}
 	playbooktest3 := app.Playbook{
-		Title:  "C",
-		TeamID: "testteamid",
+		Title:   "C",
+		TeamID:  "testteamid",
+		NumRuns: 2,
 		Checklists: []app.Checklist{
 			{
 				Title: "C",
@@ -1699,6 +1702,22 @@ func TestSortingPlaybooks(t *testing.T) {
 		{
 			testName:           "get playbooks with sort=steps direction=desc",
 			sortField:          icClient.SortBySteps,
+			sortDirection:      "desc",
+			expectedList:       []app.Playbook{playbooktest3, playbooktest2, playbooktest1},
+			expectedErr:        nil,
+			expectedStatusCode: http.StatusOK,
+		},
+		{
+			testName:           "get playbooks with sort=runs direction=asc",
+			sortField:          icClient.SortByRuns,
+			sortDirection:      "asc",
+			expectedList:       []app.Playbook{playbooktest1, playbooktest2, playbooktest3},
+			expectedErr:        nil,
+			expectedStatusCode: http.StatusOK,
+		},
+		{
+			testName:           "get playbooks with sort=runs direction=desc",
+			sortField:          icClient.SortByRuns,
 			sortDirection:      "desc",
 			expectedList:       []app.Playbook{playbooktest3, playbooktest2, playbooktest1},
 			expectedErr:        nil,

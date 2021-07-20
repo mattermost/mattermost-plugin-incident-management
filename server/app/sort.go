@@ -13,6 +13,9 @@ const (
 	// SortBySteps sorts by the number of steps in a playbook.
 	SortBySteps SortField = "steps"
 
+	// SortByRuns sorts by the number of times a playbook has been run.
+	SortByRuns SortField = "runs"
+
 	// SortByCreateAt sorts by the created time of a playbook or playbook run.
 	SortByCreateAt SortField = "create_at"
 

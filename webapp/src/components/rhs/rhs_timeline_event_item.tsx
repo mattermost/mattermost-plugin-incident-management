@@ -11,7 +11,7 @@ import {TimelineEvent, TimelineEventType} from 'src/types/rhs';
 import {isMobile} from 'src/mobile';
 import {toggleRHS} from 'src/actions';
 import {ChannelNamesMap} from 'src/types/backstage';
-import {messageHtmlToComponent, formatText} from 'src/components/shared';
+import {messageHtmlToComponent, formatText} from 'src/webapp_globals';
 import {renderDuration} from 'src/components/duration';
 import ConfirmModal from 'src/components/widgets/confirmation_modal';
 import {clientRemoveTimelineEvent} from 'src/client';
