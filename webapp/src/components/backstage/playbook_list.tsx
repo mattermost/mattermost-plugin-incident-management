@@ -6,7 +6,7 @@ import {useSelector} from 'react-redux';
 import styled from 'styled-components';
 import qs from 'qs';
 
-import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+import {getCurrentTeam, getMyTeams} from 'mattermost-redux/selectors/entities/teams';
 import {GlobalState} from 'mattermost-redux/types/store';
 import {Team} from 'mattermost-redux/types/teams';
 
@@ -35,9 +35,13 @@ import RightDots from 'src/components/assets/right_dots';
 import RightFade from 'src/components/assets/right_fade';
 import LeftDots from 'src/components/assets/left_dots';
 import LeftFade from 'src/components/assets/left_fade';
-import {PrimaryButton, UpgradeButton, UpgradeButtonProps} from 'src/components/assets/buttons';
+import {PrimaryButton, UpgradeButtonProps} from 'src/components/assets/buttons';
 
-import {useAllowPlaybookCreationInCurrentTeam, useCanCreatePlaybooks} from 'src/hooks';
+import {useAllowPlaybookCreationInCurrentTeam, useCanCreatePlaybooks, useAllowPlaybookCreationInTeams} from 'src/hooks';
+
+import CreatePlaybookTeamSelector from 'src/components/team/create_playbook_team_selector';
+
+import {TeamName, getTeamName} from 'src/components/backstage/playbook_runs/playbook_run_list/playbook_run_list';
 
 const DeleteBannerTimeout = 5000;
 
@@ -49,8 +53,8 @@ const PlaybookList = () => {
     const [showBanner, setShowBanner] = useState(false);
     const canCreatePlaybooks = useCanCreatePlaybooks();
     const [isUpgradeModalShown, showUpgradeModal, hideUpgradeModal] = useUpgradeModalVisibility(false);
-    const allowPlaybookCreation = useAllowPlaybookCreationInCurrentTeam();
-
+    const allowPlaybookCreationInTeams = useAllowPlaybookCreationInTeams();
+    const teams = useSelector<GlobalState, Team[]>(getMyTeams);
     const currentTeam = useSelector<GlobalState, Team>(getCurrentTeam);
 
     const [fetchParams, setFetchParams] = useState<{ sort: string, direction: string, page: number, per_page: number }>(
@@ -78,7 +82,7 @@ const PlaybookList = () => {
     }
 
     const fetchPlaybooks = async () => {
-        const result = await clientFetchPlaybooks(currentTeam.id, fetchParams) as FetchPlaybooksNoChecklistReturn;
+        const result = await clientFetchPlaybooks('', fetchParams) as FetchPlaybooksNoChecklistReturn;
         setPlaybooks(result.items);
         setTotalCount(result.total_count);
     };
@@ -96,10 +100,10 @@ const PlaybookList = () => {
         navigateToTeamPluginUrl(currentTeam.name, `/playbooks/${playbook.id}/edit`);
     };
 
-    const newPlaybook = (templateTitle?: string | undefined) => {
-        if (allowPlaybookCreation) {
-            const queryParams = qs.stringify({[TEMPLATE_TITLE_KEY]: templateTitle}, {addQueryPrefix: true});
-            navigateToTeamPluginUrl(currentTeam.name, `/playbooks/new${queryParams}`);
+    const newPlaybook = (team: Team, templateTitle?: string | undefined) => {
+        if (allowPlaybookCreationInTeams.get(team.id)) {
+            const queryParams = qs.stringify({team_id: team.id, [TEMPLATE_TITLE_KEY]: templateTitle}, {addQueryPrefix: true});
+            navigateToTeamPluginUrl(team.name, `/playbooks/new${queryParams}`);
         } else {
             showUpgradeModal();
         }
@@ -120,7 +124,7 @@ const PlaybookList = () => {
             let page = fetchParams.page;
 
             // Fetch latest count
-            const result = await clientFetchPlaybooks(currentTeam.id, fetchParams) as FetchPlaybooksNoChecklistReturn;
+            const result = await clientFetchPlaybooks('', fetchParams) as FetchPlaybooksNoChecklistReturn;
 
             // Go back to previous page if the last item on this page was just deleted
             page = Math.max(Math.min(result.page_count - 1, page), 0);
@@ -166,6 +170,7 @@ const PlaybookList = () => {
                         id={p.title}
                         text={p.title}
                     />
+                    <TeamName>{teams.length > 1 ? ' (' + getTeamName(teams, p.team_id) + ')' : ''}</TeamName>
                 </a>
                 <div
                     className='col-sm-2'
@@ -207,18 +212,21 @@ const PlaybookList = () => {
             {deleteSuccessfulBanner}
             {canCreatePlaybooks &&
                 <TemplateSelector
-                    onSelect={(template: PresetTemplate) => {
-                        newPlaybook(template.title);
+                    onSelect={(team: Team, template: PresetTemplate) => {
+                        newPlaybook(team, template.title);
                     }}
+                    teams={teams}
+                    allowPlaybookCreationInTeams={allowPlaybookCreationInTeams}
                 />
             }
             {
                 (playbooks?.length === 0) &&
                 <>
                     <NoContentPage
-                        onNewPlaybook={newPlaybook}
+                        onNewPlaybook={(team: Team) => newPlaybook(team)}
                         canCreatePlaybooks={canCreatePlaybooks}
-                        allowPlaybookCreation={allowPlaybookCreation}
+                        teams={teams}
+                        allowPlaybookCreationInTeams={allowPlaybookCreationInTeams}
                     />
                     <NoContentPlaybookSvg/>
                 </>
@@ -237,19 +245,14 @@ const PlaybookList = () => {
                                 className='title list-title'
                             >
                                 {'Playbooks'}
-                                <div className='light'>
-                                    {'(' + currentTeam.display_name + ')'}
-                                </div>
                             </div>
                             {canCreatePlaybooks &&
                                 <div className='header-button-div'>
-                                    <UpgradeOrPrimaryButton
-                                        onClick={() => newPlaybook()}
-                                        allowPlaybookCreation={allowPlaybookCreation}
-                                    >
-                                        <i className='icon-plus mr-2'/>
-                                        {'Create playbook'}
-                                    </UpgradeOrPrimaryButton>
+                                    <TeamSelectorButton
+                                        onClick={(team: Team) => newPlaybook(team)}
+                                        teams={teams}
+                                        allowPlaybookCreationInTeams={allowPlaybookCreationInTeams}
+                                    />
                                 </div>
                             }
                         </div>
@@ -304,17 +307,33 @@ const PlaybookList = () => {
     );
 };
 
-type CreatePlaybookButtonProps = UpgradeButtonProps & {allowPlaybookCreation: boolean};
+type CreatePlaybookButtonProps = UpgradeButtonProps & {teams: Team[], allowPlaybookCreationInTeams:Map<string, boolean>};
 
-const UpgradeOrPrimaryButton = (props: CreatePlaybookButtonProps) => {
-    const {children, allowPlaybookCreation, ...rest} = props;
+const TeamSelectorButton = (props: CreatePlaybookButtonProps) => {
+    const {teams, allowPlaybookCreationInTeams, ...rest} = props;
 
-    if (allowPlaybookCreation) {
-        return <PrimaryButton {...rest}>{children}</PrimaryButton>;
-    }
-
-    return <UpgradeButton {...rest}>{children}</UpgradeButton>;
+    return (
+        <CreatePlaybookTeamSelector
+            testId={'create-playbook-team-selector'}
+            enableEdit={true}
+            teams={teams}
+            allowPlaybookCreationInTeams={allowPlaybookCreationInTeams}
+            onSelectedChange={props.onClick}
+            withButton={true}
+            {...rest}
+        >
+            <CreatePlaybookButton>
+                <i className='icon-plus mr-2'/>
+                {'Create playbook'}
+            </CreatePlaybookButton>
+        </CreatePlaybookTeamSelector>
+    );
 };
+
+const CreatePlaybookButton = styled(PrimaryButton)`
+    display: flex;
+    align-items: center;
+`;
 
 const useUpgradeModalVisibility = (initialState: boolean): [boolean, () => void, () => void] => {
     const [isModalShown, setShowModal] = useState(initialState);
@@ -361,48 +380,18 @@ const DescriptionWarn = styled(Description)`
     color: rgba(var(--error-text-color-rgb), 0.72);
 `;
 
-const Button = styled.button`
-    display: inline-flex;
-    background: var(--button-bg);
-    color: var(--button-color);
-    border-radius: 4px;
-    border: 0px;
-    font-family: Open Sans;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 18px;
-    align-items: center;
-    padding: 14px 24px;
-    transition: all 0.15s ease-out;
-
-    &:hover {
-        opacity: 0.8;
-    }
-
-    &:active  {
-        background: rgba(var(--button-bg-rgb), 0.8);
-    }
-
-    i {
-        font-size: 24px;
-    }
-`;
-
-const NoContentPage = (props: { onNewPlaybook: () => void, canCreatePlaybooks: boolean, allowPlaybookCreation: boolean }) => {
+const NoContentPage = (props: { onNewPlaybook: (team: Team) => void, canCreatePlaybooks: boolean, teams: Team[], allowPlaybookCreationInTeams: Map<string, boolean>}) => {
     return (
         <Container>
             <Title>{'What is a playbook?'}</Title>
             <Description>{'A playbook is a workflow that your teams and tools should follow, including everything from checklists, actions, templates, and retrospectives.'}</Description>
             { props.canCreatePlaybooks &&
-                <UpgradeOrPrimaryButton
+                <TeamSelectorButton
                     className='mt-6'
-                    onClick={() => props.onNewPlaybook()}
-                    allowPlaybookCreation={props.allowPlaybookCreation}
-                >
-                    <i className='icon-plus mr-2'/>
-                    {'Create playbook'}
-                </UpgradeOrPrimaryButton>
+                    onClick={(team: Team) => props.onNewPlaybook(team)}
+                    teams={props.teams}
+                    allowPlaybookCreationInTeams={props.allowPlaybookCreationInTeams}
+                />
             }
             { !props.canCreatePlaybooks &&
             <DescriptionWarn>{"There are no playbooks to view. You don't have permission to create playbooks in this workspace."}</DescriptionWarn>

@@ -29,6 +29,9 @@ describe('backstage playbook details', () => {
                 // # Start a blank playbook
                 cy.get('#root').findByText('Blank').click();
 
+                // #  Select team
+                cy.get('[data-testid="teamIconInitial"]').first().parent().click({force: true})
+
                 // # Add a slash command to a step
                 cy.get('#root').findByText('Add a slash command').click();
 
@@ -48,6 +51,9 @@ describe('backstage playbook details', () => {
 
                 // # Start a blank playbook
                 cy.get('#root').findByText('Blank').click();
+
+                // #  Select team
+                cy.get('[data-testid="teamIconInitial"]').first().parent().click({force: true})
 
                 // # Add a slash command to a step
                 cy.get('#root').findByText('Add a slash command').click();
@@ -71,6 +77,9 @@ describe('backstage playbook details', () => {
 
                 // # Start a blank playbook
                 cy.get('#root').findByText('Blank').click();
+
+                // #  Select team
+                cy.get('[data-testid="teamIconInitial"]').first().parent().click({force: true})
 
                 // # Add a slash command to a step
                 cy.get('#root').findByText('Add a slash command').click();

@@ -168,7 +168,7 @@ func NewPlaybookRunStore(pluginAPI PluginAPIClient, log bot.Logger, sqlStore *SQ
 // GetPlaybookRuns returns filtered playbook runs and the total count before paging.
 func (s *playbookRunStore) GetPlaybookRuns(requesterInfo app.RequesterInfo, options app.PlaybookRunFilterOptions) (*app.GetPlaybookRunsResults, error) {
 	permissionsExpr := s.buildPermissionsExpr(requesterInfo)
-	teamLimitExpr := buildTeamLimitExpr(requesterInfo.UserID, options.TeamID)
+	teamLimitExpr := buildTeamLimitExpr(requesterInfo.UserID, options.TeamID, "i")
 
 	queryForResults := s.playbookRunSelect.
 		Where(permissionsExpr).
@@ -666,7 +666,7 @@ func (s *playbookRunStore) GetAllPlaybookRunMembersCount(channelID string) (int6
 // GetOwners returns the owners of the playbook runs selected by options
 func (s *playbookRunStore) GetOwners(requesterInfo app.RequesterInfo, options app.PlaybookRunFilterOptions) ([]app.OwnerInfo, error) {
 	permissionsExpr := s.buildPermissionsExpr(requesterInfo)
-	teamLimitExpr := buildTeamLimitExpr(requesterInfo.UserID, options.TeamID)
+	teamLimitExpr := buildTeamLimitExpr(requesterInfo.UserID, options.TeamID, "i")
 
 	// At the moment, the options only includes teamID
 	query := s.queryBuilder.
@@ -807,18 +807,18 @@ func (s *playbookRunStore) buildPermissionsExpr(info app.RequesterInfo) sq.Sqliz
 		  )`, info.UserID)
 }
 
-func buildTeamLimitExpr(userID, teamID string) sq.Sqlizer {
+func buildTeamLimitExpr(userID, teamID, tableName string) sq.Sqlizer {
 	if teamID != "" {
-		return sq.Eq{"i.TeamID": teamID}
+		return sq.Eq{fmt.Sprintf("%s.TeamID", tableName): teamID}
 	}
 
-	return sq.Expr(`
+	return sq.Expr(fmt.Sprintf(`
 		EXISTS(SELECT 1
 					FROM TeamMembers as tm
-					WHERE tm.TeamId = i.TeamID
+					WHERE tm.TeamId = %s.TeamID
 					  AND tm.DeleteAt = 0  
 		  	  		  AND tm.UserId = ?)
-		`, userID)
+		`, tableName), userID)
 }
 
 func (s *playbookRunStore) toPlaybookRun(rawPlaybookRun sqlPlaybookRun) (*app.PlaybookRun, error) {

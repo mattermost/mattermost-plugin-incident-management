@@ -4,12 +4,16 @@
 import React from 'react';
 import styled from 'styled-components';
 
+import {Team} from 'mattermost-redux/types/teams';
+
 import {Playbook, emptyPlaybook, newChecklistItem, defaultMessageOnJoin} from 'src/types/playbook';
 import FileIcon from 'src/components/assets/icons/file_icon';
 import AlertIcon from 'src/components/assets/icons/alert_icon';
 import {useAllowPlaybookCreationInCurrentTeam} from 'src/hooks';
 
 import UpgradeBadge from 'src/components/backstage/upgrade_badge';
+
+import CreatePlaybookTeamSelector from 'src/components/team/create_playbook_team_selector';
 
 export interface PresetTemplate {
     title: string;
@@ -130,10 +134,12 @@ const PositionedUpgradeBadge = styled(UpgradeBadge)`
 
 interface Props {
     templates?: PresetTemplate[];
-    onSelect: (t: PresetTemplate) => void
+    teams: Team[];
+    allowPlaybookCreationInTeams: Map<string, boolean>;
+    onSelect: (team: Team, t: PresetTemplate) => void
 }
 
-const TemplateSelector = ({templates = PresetTemplates, onSelect}: Props) => {
+const TemplateSelector = ({templates = PresetTemplates, onSelect, teams, allowPlaybookCreationInTeams}: Props) => {
     const allowPlaybookCreation = useAllowPlaybookCreationInCurrentTeam();
 
     return (
@@ -147,15 +153,23 @@ const TemplateSelector = ({templates = PresetTemplates, onSelect}: Props) => {
                     <TemplateItemDiv>
                         {
                             templates.map((template: PresetTemplate) => (
-                                <TemplateItem
+                                <CreatePlaybookTeamSelector
                                     key={template.title}
-                                    title={template.title}
-                                    onClick={() => {
-                                        onSelect(template);
+                                    testId={'template-item-team-selector'}
+                                    enableEdit={true}
+                                    teams={teams}
+                                    allowPlaybookCreationInTeams={allowPlaybookCreationInTeams}
+                                    onSelectedChange={(team) => {
+                                        onSelect(team, template);
                                     }}
+                                    withButton={false}
                                 >
-                                    {template.icon}
-                                </TemplateItem>
+                                    <TemplateItem
+                                        title={template.title}
+                                    >
+                                        {template.icon}
+                                    </TemplateItem>
+                                </CreatePlaybookTeamSelector>
                             ))
                         }
                     </TemplateItemDiv>
@@ -168,7 +182,6 @@ const TemplateSelector = ({templates = PresetTemplates, onSelect}: Props) => {
 interface TemplateItemProps {
     title: string;
     children: JSX.Element[] | JSX.Element;
-    onClick: () => void;
 }
 
 const IconContainer = styled.div`
@@ -195,9 +208,7 @@ const TemplateTitle = styled.div`
 
 const TemplateItem = (props: TemplateItemProps) => {
     return (
-        <TemplateItemContainer
-            onClick={props.onClick}
-        >
+        <TemplateItemContainer>
             <IconContainer>{props.children}</IconContainer>
             <TemplateTitle>{props.title}</TemplateTitle>
         </TemplateItemContainer>

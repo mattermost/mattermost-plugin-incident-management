@@ -8,6 +8,7 @@ import {Client4} from 'mattermost-redux/client';
 import styled from 'styled-components';
 interface Props {
     team: Team;
+    allowed: boolean;
 }
 
 /**
@@ -48,6 +49,7 @@ const TeamWithIcon = (props: Props) => {
             <NameWrapper>
                 {props.team.display_name}
             </NameWrapper>
+            {props.allowed ? '' : <NotAllowedIcon className='icon icon-key-variant-circle'/>}
         </TeamWrapper>
     );
 };
@@ -116,4 +118,9 @@ const InitialWrapper = styled.div`
     width: 100%;
     height: 100%;
     border: none;
+`;
+
+const NotAllowedIcon = styled.i`
+    position: absolute;
+    right: 10px;
 `;

@@ -290,12 +290,7 @@ func (h *PlaybookHandler) getPlaybooks(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if teamID == "" {
-		h.HandleErrorWithCode(w, http.StatusBadRequest, "Provide a team ID", nil)
-		return
-	}
-
-	if !app.CanViewTeam(userID, teamID, h.pluginAPI) {
+	if teamID != "" && !app.CanViewTeam(userID, teamID, h.pluginAPI) {
 		h.HandleErrorWithCode(w, http.StatusForbidden, "Not authorized", errors.Errorf(
 			"userID %s does not have permission to get playbooks on teamID %s",
 			userID,
@@ -337,7 +332,7 @@ func (h *PlaybookHandler) getPlaybooksAutoComplete(w http.ResponseWriter, r *htt
 	teamID := query.Get("team_id")
 	userID := r.Header.Get("Mattermost-User-ID")
 
-	if !app.CanViewTeam(userID, teamID, h.pluginAPI) {
+	if teamID != "" && !app.CanViewTeam(userID, teamID, h.pluginAPI) {
 		h.HandleErrorWithCode(w, http.StatusForbidden, "user does not have permissions to view team", nil)
 		return
 	}
@@ -374,7 +369,7 @@ func (h *PlaybookHandler) getPlaybookCount(w http.ResponseWriter, r *http.Reques
 	teamID := query.Get("team_id")
 	userID := r.Header.Get("Mattermost-User-ID")
 
-	if !app.CanViewTeam(userID, teamID, h.pluginAPI) {
+	if teamID != "" && !app.CanViewTeam(userID, teamID, h.pluginAPI) {
 		h.HandleErrorWithCode(w, http.StatusForbidden, "user does not have permissions to view team", nil)
 		return
 	}

@@ -3,7 +3,7 @@ import {useDispatch, useSelector, useStore} from 'react-redux';
 
 import {haveITeamPermission} from 'mattermost-redux/selectors/entities/roles';
 import {PermissionsOptions} from 'mattermost-redux/selectors/entities/roles_helpers';
-import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+import {getCurrentTeam, getMyTeams} from 'mattermost-redux/selectors/entities/teams';
 import {GlobalState} from 'mattermost-redux/types/store';
 import {Team} from 'mattermost-redux/types/teams';
 import {
@@ -26,7 +26,7 @@ import {clientFetchPlaybooksCount} from 'src/client';
 import {receivedTeamNumPlaybooks} from 'src/actions';
 
 import {isCloud, isE10LicensedOrDevelopment, isE20LicensedOrDevelopment} from './license';
-import {currentTeamNumPlaybooks, globalSettings, isCurrentUserAdmin} from './selectors';
+import {currentTeamNumPlaybooks, globalSettings, isCurrentUserAdmin, numPlaybooksByTeam} from './selectors';
 
 /**
  * Hook that calls handler when targetKey is pressed.
@@ -246,6 +246,31 @@ export function useNumPlaybooksInCurrentTeam() {
     }, [team.id]);
 
     return numPlaybooks;
+}
+
+export function useAllowPlaybookCreationInTeams() {
+    const dispatch = useDispatch();
+    const numPlaybooks = useSelector(numPlaybooksByTeam);
+    const myTeams = useSelector(getMyTeams);
+    const isLicensed = useSelector(isE10LicensedOrDevelopment);
+
+    useEffect(() => {
+        for (const team of myTeams) {
+            const fetch = async () => {
+                const response = await clientFetchPlaybooksCount(team.id);
+                dispatch(receivedTeamNumPlaybooks(team.id, response.count));
+            };
+            fetch();
+        }
+    }, []);
+
+    const allowPlaybookCreationInTeams = new Map<string, boolean>();
+    for (const team of myTeams) {
+        const num = numPlaybooks[team.id] || 0;
+        allowPlaybookCreationInTeams.set(team.id, isLicensed || num === 0);
+    }
+
+    return allowPlaybookCreationInTeams;
 }
 
 // useAllowPlaybookCreationInCurrentTeam returns whether a user can create

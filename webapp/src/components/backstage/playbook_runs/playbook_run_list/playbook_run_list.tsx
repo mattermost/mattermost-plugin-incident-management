@@ -292,15 +292,6 @@ const BackstagePlaybookRunList = () => {
         setTeamSelectorToggle(!teamSelectorToggle);
     };
 
-    function getTeamName(id: string): string {
-        for (const team in teams) {
-            if (teams[team].id === id) {
-                return teams[team].display_name;
-            }
-        }
-        return '';
-    }
-
     const goToMattermost = () => {
         navigateToUrl(`/${currentTeam.name}`);
     };
@@ -437,7 +428,7 @@ const BackstagePlaybookRunList = () => {
                                 id={playbookRun.id}
                                 text={playbookRun.name}
                             />
-                            <TeamName>{teams.length > 1 ? ' (' + getTeamName(playbookRun.team_id) + ')' : ''}</TeamName>
+                            <TeamName>{teams.length > 1 ? ' (' + getTeamName(teams, playbookRun.team_id) + ')' : ''}</TeamName>
                         </a>
                         <div className='col-sm-2'>
                             <StatusBadge status={playbookRunCurrentStatus(playbookRun)}/>
@@ -495,7 +486,7 @@ const endedAt = (isActive: boolean, time: number) => {
 
 export default BackstagePlaybookRunList;
 
-const TeamName = styled.div`
+export const TeamName = styled.div`
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -503,3 +494,12 @@ const TeamName = styled.div`
     color: var(--center-channel-color-72);
     padding-left: 4px;
 `;
+
+export function getTeamName(teams: Team[], id: string): string {
+    for (const team in teams) {
+        if (teams[team].id === id) {
+            return teams[team].display_name;
+        }
+    }
+    return '';
+}

@@ -33,7 +33,7 @@ describe('backstage playbook list', () => {
         cy.visit('/ad-1/');
     });
 
-    it('has "Playbooks" and team name in heading', () => {
+    it('has "Playbooks" in heading', () => {
         // # Open backstage
         cy.visit('/ad-1/com.mattermost.plugin-incident-management');
 
@@ -42,6 +42,5 @@ describe('backstage playbook list', () => {
 
         // * Assert contents of heading.
         cy.findByTestId('titlePlaybook').should('exist').contains('Playbooks');
-        cy.findByTestId('titlePlaybook').contains('eligendi');
     });
 });

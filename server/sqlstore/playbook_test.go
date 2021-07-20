@@ -912,6 +912,26 @@ func TestGetPlaybooksForTeam(t *testing.T) {
 			},
 			expectedErr: nil,
 		},
+		{
+			name:   "all teams from Andrew",
+			teamID: "",
+			requesterInfo: app.RequesterInfo{
+				UserID: andrew.ID,
+				TeamID: "",
+			},
+			options: app.PlaybookFilterOptions{
+				Sort:    app.SortByTitle,
+				Page:    0,
+				PerPage: 1000,
+			},
+			expected: app.GetPlaybooksResults{
+				TotalCount: 3,
+				PageCount:  1,
+				HasMore:    false,
+				Items:      []app.Playbook{pb01, pb02, pb05},
+			},
+			expectedErr: nil,
+		},
 	}
 
 	for _, driverName := range driverNames {
@@ -959,7 +979,11 @@ func TestGetPlaybooksForTeam(t *testing.T) {
 					testCase.expected.Items[i].MemberIDs = nil
 				}
 
-				require.Equal(t, testCase.expected, actual)
+				require.ElementsMatch(t, testCase.expected.Items, actual.Items)
+				require.Equal(t, testCase.expected.HasMore, actual.HasMore)
+				require.Equal(t, testCase.expected.PageCount, actual.PageCount)
+				require.Equal(t, testCase.expected.TotalCount, actual.TotalCount)
+				require.Len(t, actual.Items, len(testCase.expected.Items))
 			})
 		}
 	}

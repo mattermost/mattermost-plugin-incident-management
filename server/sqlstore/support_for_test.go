@@ -426,10 +426,10 @@ func addUsers(t *testing.T, store *SQLStore, users []userInfo) {
 func addUsersToTeam(t *testing.T, store *SQLStore, users []userInfo, teamID string) {
 	t.Helper()
 
-	insertBuilder := store.builder.Insert("TeamMembers").Columns("TeamId", "UserId")
+	insertBuilder := store.builder.Insert("TeamMembers").Columns("TeamId", "UserId", "DeleteAt")
 
 	for _, u := range users {
-		insertBuilder = insertBuilder.Values(teamID, u.ID)
+		insertBuilder = insertBuilder.Values(teamID, u.ID, 0)
 	}
 
 	_, err := store.execBuilder(store.db, insertBuilder)
