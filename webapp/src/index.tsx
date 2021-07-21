@@ -11,6 +11,8 @@ import {GlobalState} from 'mattermost-redux/types/store';
 import {PluginRegistry} from 'mattermost-webapp/plugins/registry';
 import WebsocketEvents from 'mattermost-redux/constants/websocket';
 
+import {getCurrentTeam} from 'mattermost-redux/selectors/entities/teams';
+
 import {makeRHSOpener} from 'src/rhs_opener';
 import {makeSlashCommandHook} from 'src/slash_command';
 
@@ -50,6 +52,34 @@ import SystemConsoleEnabledTeams from './system_console_enabled_teams';
 import {makeUpdateMainMenu} from './make_update_main_menu';
 import {fetchGlobalSettings} from './client';
 import {CloudUpgradePost} from './components/cloud_upgrade_post';
+import {teamPluginUrl} from './browser_routing';
+
+const GlobalHeaderIcon = () => {
+    return (
+        <svg
+            width='24'
+            height='24'
+            viewBox='0 0 24 24'
+            fill='none'
+            xmlns='http://www.w3.org/2000/svg'
+        >
+            <path
+                fillRule='evenodd'
+                clipRule='evenodd'
+                d='M1.55148 11.4515C1.08286 11.9201 1.08285 12.6799 1.55148 13.1486L7.58707 19.1841C8.05569 19.6528 8.81549 19.6528 9.28412 19.1841L11.8233 16.645L14.3625 19.1841C14.8311 19.6528 15.5909 19.6528 16.0595 19.1841L22.0951 13.1486C22.5637 12.6799 22.5637 11.9201 22.0951 11.4515L16.0595 5.41593C15.5909 4.9473 14.8311 4.9473 14.3625 5.41592L11.8233 7.9551L9.28412 5.41593C8.81549 4.9473 8.0557 4.9473 7.58707 5.41592L1.55148 11.4515ZM11.8233 7.9551L8.3269 11.4515C7.85827 11.9201 7.85827 12.6799 8.3269 13.1486L11.8233 16.645L15.3197 13.1486C15.7883 12.6799 15.7883 11.9201 15.3197 11.4515L11.8233 7.9551Z'
+                fill='green'
+            />
+        </svg>
+    );
+};
+
+const TestComponent = () => {
+    return (
+        <div>
+            {'This is Playbooks'}
+        </div>
+    );
+};
 
 export default class Plugin {
     removeMainMenuSub?: Unsubscribe;
@@ -72,6 +102,17 @@ export default class Plugin {
             store.dispatch(actionSetGlobalSettings(await fetchGlobalSettings()));
         };
         getGlobalSettings();
+
+        if (registry.registerProduct) {
+            registry.registerProduct(
+                '/playbooks',
+                GlobalHeaderIcon,
+                'Playbooks',
+                '/playbooks',
+                Backstage,
+                TestComponent,
+            );
+        }
 
         const doRegistrations = () => {
             const r = new RegistryWrapper(registry, store);
